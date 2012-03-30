@@ -8,3 +8,7 @@ h1 {
     text-align: center;
     font: bold 40px sans-serif;
 }
+
+#buttons {
+    margin-left: 50%;
+}
