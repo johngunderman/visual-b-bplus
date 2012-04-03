@@ -12,3 +12,12 @@ h1 {
 #buttons {
     margin-left: 50%;
 }
+
+#board {
+    border:1px dashed #333;
+
+}
+
+#content {
+    margin-left: 10%;
+}
