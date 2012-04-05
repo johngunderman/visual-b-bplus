@@ -8,7 +8,7 @@ var ITEM_HEIGHT = 40;
 
 window.onload = function() {
     initializeCanvas();
-    var box = generateNode(3);
+    var box = generateRoot(3);
     box.addKey(22);
     box.addKey(4);
 };
@@ -27,14 +27,21 @@ function initializeCanvas() {
     layer = new Kinetic.Layer();
 }
 
-// Takes in the degree, generates a node of that degree,
-// returns a handle to the node.
-function generateNode(degree) {
 
+function generateRoot(degree) {
     var w = degree * ITEM_WIDTH;
 
-    var rectX = stage.width / 2 - w / 2;
-    var rectY = stage.height / 4 - 25;
+    var x = stage.width / 2 - w / 2;
+    var y = stage.height / 4 - 25;
+
+    return generateNode(degree, x, y);
+}
+
+// Takes in the degree, generates a node of that degree,
+// returns a handle to the node.
+function generateNode(degree, rectX, rectY) {
+
+    var w = degree * ITEM_WIDTH;
 
     var group = new Kinetic.Group({
         draggable: true
@@ -98,13 +105,10 @@ function generateNode(degree) {
 function makeIntoNode(box, degree) {
     box.nodeKeys = []
     box.nodeDegree = degree
-    console.log(box);
-    console.log(box.x + ITEM_WIDTH * box.nodeKeys.length);
 
     box.addKey = function(key) {
 
         var pos = this.nodeKeys.length;
-        console.log(pos);
 
         var simpleText = new Kinetic.Text({
             x: box.x + ITEM_WIDTH * (pos + .5),
@@ -123,4 +127,9 @@ function makeIntoNode(box, degree) {
         layer.add(box.group);
         stage.add(layer);
     };
+
+    // How we add levels to our tree
+    box.makeChild = function() {
+        
+    }
 }
