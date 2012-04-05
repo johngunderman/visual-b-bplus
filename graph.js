@@ -8,7 +8,9 @@ var ITEM_HEIGHT = 40;
 
 window.onload = function() {
     initializeCanvas();
-    generateNode(3);
+    var box = generateNode(3);
+    box.addKey(22);
+    box.addKey(4);
 };
 
 // Initialize the canvas element using Kinetic
@@ -52,8 +54,9 @@ function generateNode(degree) {
     group.add(box)
 
     var spacing = Math.floor(w / degree);
-
+    // Draw all the vertical lines seperating the degrees of the node
     for (var i = 1; i < degree; i++) {
+        // function needed to induce scopeg
         (function() {
             var xcoord = Math.floor(rectX + spacing * i);
             var line = new Kinetic.Shape({
@@ -84,5 +87,40 @@ function generateNode(degree) {
 
     layer.add(group);
     stage.add(layer);
+
+    makeIntoNode(box, degree);
+    box.group = group;
+
+    return box;
 }
 
+
+function makeIntoNode(box, degree) {
+    box.nodeKeys = []
+    box.nodeDegree = degree
+    console.log(box);
+    console.log(box.x + ITEM_WIDTH * box.nodeKeys.length);
+
+    box.addKey = function(key) {
+
+        var pos = this.nodeKeys.length;
+        console.log(pos);
+
+        var simpleText = new Kinetic.Text({
+            x: box.x + ITEM_WIDTH * (pos + .5),
+            y: box.y + 1/2 * ITEM_HEIGHT,
+            text: key,
+            fontSize: 20,
+            fontFamily: "helvetica",
+            textFill: "black",
+            align: "center",
+            verticalAlign: "middle"
+        });
+
+        box.nodeKeys.push(key);
+
+        box.group.add(simpleText);
+        layer.add(box.group);
+        stage.add(layer);
+    };
+}
