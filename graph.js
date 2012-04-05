@@ -1,15 +1,31 @@
 "use strict";
 
-window.onload = function() {
-    //var h = $("board").height;
-    var w = $("#board").width();
+var layer = {};
+var stage = {};
 
-    var stage = new Kinetic.Stage({
+window.onload = function() {
+    initializeCanvas();
+    generateNode(3);
+};
+
+// Initialize the canvas element using Kinetic
+// Creates global variables for 'stage' and 'layer'
+function initializeCanvas() {
+   var w = $("#board").width();
+
+    stage = new Kinetic.Stage({
         container: "board",
         width: w,
         height: 500
     });
-    var layer = new Kinetic.Layer();
+
+    layer = new Kinetic.Layer();
+}
+
+// Takes in the degree, generates a node of that degree,
+// returns a handle to the node.
+function generateNode(degree) {
+
     var rectX = stage.width / 2 - 50;
     var rectY = stage.height / 2 - 25;
 
@@ -34,4 +50,5 @@ window.onload = function() {
 
     layer.add(box);
     stage.add(layer);
-};
+}
+
