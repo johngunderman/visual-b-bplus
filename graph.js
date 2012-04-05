@@ -11,6 +11,11 @@ window.onload = function() {
     var box = generateRoot(3);
     box.addKey(22);
     box.addKey(4);
+    var box2 = box.makeChild();
+    box.makeChild();
+    box.makeChild();
+    box2.makeChild();
+    box2.makeChild();
 };
 
 // Initialize the canvas element using Kinetic
@@ -103,8 +108,9 @@ function generateNode(degree, rectX, rectY) {
 
 
 function makeIntoNode(box, degree) {
-    box.nodeKeys = []
-    box.nodeDegree = degree
+    box.nodeKeys = [];
+    box.nodeDegree = degree;
+    box.nodeChildren = [];
 
     box.addKey = function(key) {
 
@@ -130,6 +136,19 @@ function makeIntoNode(box, degree) {
 
     // How we add levels to our tree
     box.makeChild = function() {
-        
+        var degree = box.nodeDegree;
+        var y = ITEM_HEIGHT * 4 + box.y;
+        // the * 2 - 1 needed for the spacing between nodes on the child level.
+        // broken right now
+        //x = (degree * 2 - 1) / 2;
+        var x = box.x - (ITEM_WIDTH * (degree + degree - 1))
+            + (ITEM_WIDTH * degree * box.nodeChildren.length)
+            + (ITEM_WIDTH * box.nodeChildren.length)
+
+
+
+        var node = generateNode(degree, x, y);
+        box.nodeChildren.push(node);
+        return node;
     }
 }
