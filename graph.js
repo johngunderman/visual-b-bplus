@@ -16,6 +16,7 @@ window.onload = function() {
     box.makeChild();
     box2.makeChild();
     box2.makeChild();
+    box2.makeChild();
 };
 
 // Initialize the canvas element using Kinetic
@@ -96,7 +97,6 @@ function generateNode(degree, rectX, rectY) {
         document.body.style.cursor = "default";
     });
 
-
     layer.add(group);
     stage.add(layer);
 
@@ -111,6 +111,8 @@ function makeIntoNode(box, degree) {
     box.nodeKeys = [];
     box.nodeDegree = degree;
     box.nodeChildren = [];
+    box.connectorLines = [];
+    box.linecounter = 0;
 
     box.addKey = function(key) {
 
@@ -144,11 +146,36 @@ function makeIntoNode(box, degree) {
         var x = box.x - (ITEM_WIDTH * (degree + 1))
             + (ITEM_WIDTH * degree * box.nodeChildren.length)
             + (ITEM_WIDTH * box.nodeChildren.length)
-
-
+        //TODO:  When we insert a left or right node, shift the nodes to the right or left
 
         var node = generateNode(degree, x, y);
         box.nodeChildren.push(node);
+
+        // Draw our connecting lines
+        var connectorline = new Kinetic.Shape({
+                fill: "#00D2FF",
+                stroke: "black",
+                strokeWidth: 2
+            });
+        connectorline.top = box;
+        connectorline.bot = node;
+        connectorline.index = box.linecounter++;
+        (function() {
+        connectorline.drawFunc = function() {
+            var context = this.getContext();
+            context.beginPath();
+            console.log(this.index)
+            context.moveTo(this.top.x + ITEM_WIDTH * this.index, this.top.y + ITEM_HEIGHT);
+            context.lineTo(this.bot.x, this.bot.y);
+            context.closePath();
+            this.fillStroke();
+        }})();
+
+        box.connectorLines.push(connectorline);
+        box.group.add(connectorline);
+
+        
+
         return node;
     }
 }
