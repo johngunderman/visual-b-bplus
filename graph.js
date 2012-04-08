@@ -141,7 +141,7 @@ function makeIntoNode(box, degree) {
         // the * 2 - 1 needed for the spacing between nodes on the child level.
         // broken right now
         //x = (degree * 2 - 1) / 2;
-        var x = box.x - (ITEM_WIDTH * (degree + degree - 1))
+        var x = box.x - (ITEM_WIDTH * (degree + 1))
             + (ITEM_WIDTH * degree * box.nodeChildren.length)
             + (ITEM_WIDTH * box.nodeChildren.length)
 
