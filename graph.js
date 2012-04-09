@@ -107,8 +107,7 @@ function generateNode(degree, rectX, rectY) {
     });
 
     group.on("dragmove", function() {
-            console.log("foo");
-            reDrawLines();
+            lineLayer.draw();
         });
 
     layer.add(group);
@@ -197,19 +196,4 @@ function generateLine(parent, child) {
     lineLayer.add(line);
     lineLayer.draw();
     //child.group.add(line);
-}
-
-function reDrawLines() {
-    lineLayer.clear();
-    var nodes = [];
-    nodes.push(rootNode);
-
-    while(nodes.length > 0) {
-        var node = nodes.shift();
-
-        for(var x = 0; x < node.nodeChildren.length; x++) {
-            generateLine(node, node.nodeChildren[x]);
-            nodes.push(node.nodeChildren[x]);
-        }
-    }
 }
