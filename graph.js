@@ -2,13 +2,15 @@
 
 var layer = {};
 var stage = {};
+var lineLayer = {};
+var rootNode = {};
 
 var ITEM_WIDTH = 60;
 var ITEM_HEIGHT = 40;
 
 window.onload = function() {
     initializeCanvas();
-    var box = generateRoot(3);
+    var box = generateRoot(2);
     box.addKey(22);
     box.addKey(4);
     var box2 = box.makeChild();
@@ -31,23 +33,28 @@ function initializeCanvas() {
     });
 
     layer = new Kinetic.Layer();
+    lineLayer = new Kinetic.Layer();
+
+    stage.add(lineLayer);
+
 }
 
 
 function generateRoot(degree) {
-    var w = degree * ITEM_WIDTH;
+    var w = (degree + 1) * ITEM_WIDTH;
 
     var x = stage.width / 2 - w / 2;
     var y = stage.height / 4 - 25;
 
-    return generateNode(degree, x, y);
+    rootNode = generateNode(degree, x, y);
+    return rootNode;
 }
 
 // Takes in the degree, generates a node of that degree,
 // returns a handle to the node.
 function generateNode(degree, rectX, rectY) {
 
-    var w = degree * ITEM_WIDTH;
+    var w = (degree + 1) * ITEM_WIDTH;
 
     var group = new Kinetic.Group({
         draggable: true
@@ -64,11 +71,11 @@ function generateNode(degree, rectX, rectY) {
         draggable: true
     });
 
-    group.add(box)
+    group.add(box);
 
-    var spacing = Math.floor(w / degree);
+    var spacing = Math.floor(w / (degree + 1));
     // Draw all the vertical lines seperating the degrees of the node
-    for (var i = 1; i < degree; i++) {
+    for (var i = 1; i < degree + 1; i++) {
         // function needed to induce scopeg
         (function() {
             var xcoord = Math.floor(rectX + spacing * i);
@@ -89,6 +96,8 @@ function generateNode(degree, rectX, rectY) {
         })();
     }
 
+    group.cnode = box;
+
     // add cursor styling
     group.on("mouseover", function() {
         document.body.style.cursor = "pointer";
@@ -96,6 +105,11 @@ function generateNode(degree, rectX, rectY) {
     group.on("mouseout", function() {
         document.body.style.cursor = "default";
     });
+
+    group.on("dragmove", function() {
+            console.log("foo");
+            reDrawLines();
+        });
 
     layer.add(group);
     stage.add(layer);
@@ -111,8 +125,8 @@ function makeIntoNode(box, degree) {
     box.nodeKeys = [];
     box.nodeDegree = degree;
     box.nodeChildren = [];
-    box.connectorLines = [];
-    box.linecounter = 0;
+    box.childLines = [];
+    box.parentLines = [];
 
     box.addKey = function(key) {
 
@@ -143,39 +157,59 @@ function makeIntoNode(box, degree) {
         // the * 2 - 1 needed for the spacing between nodes on the child level.
         // broken right now
         //x = (degree * 2 - 1) / 2;
-        var x = box.x - (ITEM_WIDTH * (degree + 1))
-            + (ITEM_WIDTH * degree * box.nodeChildren.length)
+        var x = box.x - (ITEM_WIDTH * (degree + 2))
+        + (ITEM_WIDTH * (degree + 1) * box.nodeChildren.length)
             + (ITEM_WIDTH * box.nodeChildren.length)
         //TODO:  When we insert a left or right node, shift the nodes to the right or left
-
         var node = generateNode(degree, x, y);
+        generateLine(box, node);
         box.nodeChildren.push(node);
 
-        // Draw our connecting lines
-        var connectorline = new Kinetic.Shape({
-                fill: "#00D2FF",
-                stroke: "black",
-                strokeWidth: 2
-            });
-        connectorline.top = box;
-        connectorline.bot = node;
-        connectorline.index = box.linecounter++;
-        (function() {
-        connectorline.drawFunc = function() {
-            var context = this.getContext();
-            context.beginPath();
-            console.log(this.index)
-            context.moveTo(this.top.x + ITEM_WIDTH * this.index, this.top.y + ITEM_HEIGHT);
-            context.lineTo(this.bot.x, this.bot.y);
-            context.closePath();
-            this.fillStroke();
-        }})();
-
-        box.connectorLines.push(connectorline);
-        box.group.add(connectorline);
-
-        
-
         return node;
+    }
+}
+
+function generateLine(parent, child) {
+    // Draw our connecting lines
+    var line = new Kinetic.Shape({
+            fill: "#00D2FF",
+            stroke: "black",
+            strokeWidth: 2
+        });
+
+    line.nparent = parent;
+    line.nchild = child;
+
+    line.drawFunc = function() {
+        var context = this.getContext();
+        context.beginPath();
+        context.moveTo(this.nparent.group.x + this.nparent.x, this.nparent.group.y + this.nparent.y + ITEM_HEIGHT);
+        //context.moveTo(this.nparent.x, this.nparent.y);
+        //context.moveTo(300,300);
+        //context.lineTo(200,200);
+        context.lineTo(this.nchild.x + this.nchild.group.x, this.nchild.y + this.nchild.group.y);
+        context.closePath();
+        this.fillStroke();
+    };
+
+    parent.childLines.push(line);
+    child.parentLines.push(line);
+    lineLayer.add(line);
+    lineLayer.draw();
+    //child.group.add(line);
+}
+
+function reDrawLines() {
+    lineLayer.clear();
+    var nodes = [];
+    nodes.push(rootNode);
+
+    while(nodes.length > 0) {
+        var node = nodes.shift();
+
+        for(var x = 0; x < node.nodeChildren.length; x++) {
+            generateLine(node, node.nodeChildren[x]);
+            nodes.push(node.nodeChildren[x]);
+        }
     }
 }
