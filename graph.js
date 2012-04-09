@@ -13,12 +13,12 @@ window.onload = function() {
     var box = generateRoot(2);
     box.addKey(22);
     box.addKey(4);
-    var box2 = box.makeChild();
-    box.makeChild();
-    box.makeChild();
-    box2.makeChild();
-    box2.makeChild();
-    box2.makeChild();
+    var box2 = box.makeChild(0);
+    box.makeChild(1);
+    box.makeChild(2);
+    box2.makeChild(0);
+    box2.makeChild(1);
+    box2.makeChild(2);
 };
 
 // Initialize the canvas element using Kinetic
@@ -120,7 +120,7 @@ function generateNode(degree, rectX, rectY) {
 }
 
 
-function makeIntoNode(box, degree) {
+function makeIntoNode(box, degree, pos) {
     box.nodeKeys = [];
     box.nodeDegree = degree;
     box.nodeChildren = [];
@@ -150,7 +150,7 @@ function makeIntoNode(box, degree) {
     };
 
     // How we add levels to our tree
-    box.makeChild = function() {
+    box.makeChild = function(pos) {
         var degree = box.nodeDegree;
         var y = ITEM_HEIGHT * 4 + box.y;
         // the * 2 - 1 needed for the spacing between nodes on the child level.
@@ -161,14 +161,14 @@ function makeIntoNode(box, degree) {
             + (ITEM_WIDTH * box.nodeChildren.length)
         //TODO:  When we insert a left or right node, shift the nodes to the right or left
         var node = generateNode(degree, x, y);
-        generateLine(box, node);
+        generateLine(box, node, pos);
         box.nodeChildren.push(node);
 
         return node;
     }
 }
 
-function generateLine(parent, child) {
+function generateLine(parent, child, pos) {
     // Draw our connecting lines
     var line = new Kinetic.Shape({
             fill: "#00D2FF",
@@ -182,7 +182,7 @@ function generateLine(parent, child) {
     line.drawFunc = function() {
         var context = this.getContext();
         context.beginPath();
-        context.moveTo(this.nparent.group.x + this.nparent.x, this.nparent.group.y + this.nparent.y + ITEM_HEIGHT);
+        context.moveTo(this.nparent.group.x + this.nparent.x + pos * ITEM_WIDTH, this.nparent.group.y + this.nparent.y + ITEM_HEIGHT);
         //context.moveTo(this.nparent.x, this.nparent.y);
         //context.moveTo(300,300);
         //context.lineTo(200,200);
