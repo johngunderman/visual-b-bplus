@@ -4,6 +4,7 @@ var layer = {};
 var stage = {};
 var lineLayer = {};
 var rootNode = {};
+var nodeLevels = [];             // contains arrays with the nodes on each level
 
 var ITEM_WIDTH = 60;
 var ITEM_HEIGHT = 40;
@@ -116,9 +117,24 @@ function generateNode(degree, rectX, rectY) {
     makeIntoNode(box, degree);
     box.group = group;
 
+    addNodeToResizableRepresentation(box);
+
     return box;
 }
 
+
+// BECAUSE LONG FUNCTION NAMES ARE COOL, RIGHT???
+// (I feel like I'm writing Java. It's terrifying.)
+def addNodeToResizableRepresentation(node) {
+    var len = nodeLevels.length;
+
+    if (len == 0) {
+        // special case, we are the root node
+        nodeLevels.push([node]);
+    }
+
+    
+}
 
 function makeIntoNode(box, degree, pos) {
     box.nodeKeys = [];
