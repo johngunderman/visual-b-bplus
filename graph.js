@@ -189,11 +189,13 @@ function generateLine(parent, child, pos) {
     line.drawFunc = function() {
         var context = this.getContext();
         context.beginPath();
-        context.moveTo(this.nparent.group.x + this.nparent.x + pos * ITEM_WIDTH, this.nparent.group.y + this.nparent.y + ITEM_HEIGHT);
+        context.moveTo(this.nparent.group.x + this.nparent.x + pos * ITEM_WIDTH,
+                       this.nparent.group.y + this.nparent.y + ITEM_HEIGHT);
         //context.moveTo(this.nparent.x, this.nparent.y);
         //context.moveTo(300,300);
         //context.lineTo(200,200);
-        context.lineTo(this.nchild.x + this.nchild.group.x, this.nchild.y + this.nchild.group.y);
+        context.lineTo(this.nchild.x + this.nchild.group.x,
+                       this.nchild.y + this.nchild.group.y);
         context.closePath();
         this.fillStroke();
     };
