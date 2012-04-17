@@ -11,15 +11,22 @@ var ITEM_HEIGHT = 40;
 
 window.onload = function() {
     initializeCanvas();
-    var box = generateRoot(2);
-    box.addKey(22);
-    box.addKey(4);
+    // TODO: This isn't the right order!
+    // Currently off by 2 (our current tree is actually order 5)
+    var box = generateRoot(3);
+    box.addKey(7);
+    box.addKey(16);
     var box2 = box.makeChild(0);
-    box.makeChild(1);
-    box.makeChild(2);
-    box2.makeChild(0);
-    box2.makeChild(1);
-    box2.makeChild(2);
+    var box3 = box.makeChild(1);
+    var box4 = box.makeChild(2);
+    box2.addKey(1);
+    box2.addKey(2);
+    box2.addKey(5);
+    box2.addKey(6);
+    box3.addKey(9);
+    box3.addKey(12);
+    box4.addKey(18);
+    box4.addKey(21);
 };
 
 // Initialize the canvas element using Kinetic
