@@ -132,7 +132,7 @@ function generateNode(degree, rectX, rectY) {
 
 // BECAUSE LONG FUNCTION NAMES ARE COOL, RIGHT???
 // (I feel like I'm writing Java. It's terrifying.)
-def addNodeToResizableRepresentation(node) {
+function addNodeToResizableRepresentation(node) {
     var len = nodeLevels.length;
 
     if (len == 0) {
@@ -140,7 +140,6 @@ def addNodeToResizableRepresentation(node) {
         nodeLevels.push([node]);
     }
 
-    
 }
 
 function makeIntoNode(box, degree, pos) {
