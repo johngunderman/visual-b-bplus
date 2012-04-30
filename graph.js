@@ -37,7 +37,7 @@ function initializeCanvas() {
     stage = new Kinetic.Stage({
         container: "board",
         width: w,
-        height: 500
+        height: 700
     });
 
     layer = new Kinetic.Layer();
@@ -52,7 +52,7 @@ function generateRoot(degree) {
     var w = (degree + 1) * ITEM_WIDTH;
 
     var x = stage.width / 2 - w / 2;
-    var y = stage.height / 4 - 25;
+    var y = 40;
 
     rootNode = generateNode(degree, x, y);
     return rootNode;

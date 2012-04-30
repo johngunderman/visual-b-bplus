@@ -1,7 +1,7 @@
 body {
     font-family: sans-serif;
-    margin-left: 10%;
-    margin-right: 10%;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 h1 {
@@ -16,8 +16,4 @@ h1 {
 #board {
     border:1px dashed #333;
 
-}
-
-#content {
-    margin-left: 10%;
 }
