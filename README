@@ -1,0 +1,4 @@
+A visualization for B+ Trees, in interactive form.
+
+Just open up index.html in your browser, and the rest should Just Work.
+Note that this has only been tested in Chrome.
