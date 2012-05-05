@@ -233,6 +233,65 @@ function bp_insertUp(left, right, middleguy, median, current_node){
     }
 }
 
+function bp_leaf_split(left,right,middleguy,median,current_node){
+	var node = this.nodes[current_node];
+    if(node.parent == -1){
+        //Node is root node
+        this.nodes[current_node] = new node(this.order,0,true);
+        this.nodes[current_node].values = left;
+        this.nodes[current_node].size = left.length;
+        this.nodes[this.numNodes] = new node(this.order,0,true);
+        this.nodes[this.numNodes].values = right;
+        this.nodes[this.numNodes].size = right.length;
+        //Split up old children
+        this.nodes[this.current_node].children = this.nodes[0].children.split(0,median);
+        this.nodes[this.numNodes].children = this.nodes[0].children.split(median);
+        this.nodes[0].children = new Array();
+        this.nodes[0].children[0] = current_node;
+        this.nodes[0].children[1] = this.numNodes;
+        this.nodes[0].isLeaf=false;
+        this.nodes[0].values = new Array();
+        this.nodes[0].values[0] = middleguy;
+        
+        this.numNodes += 2;
+        return;
+    }
+    //else if(node.parent == 0){
+        //Node's parent is root
+    //}
+    else{
+        this.nodes[current_node] = new node(this.order,0,true);
+        this.nodes[current_node].values = left;
+        this.nodes[current_node].size = left.length;
+        this.nodes[this.numNodes] = new node(this.order,0,true);
+        this.nodes[this.numNodes].values = right;
+        this.nodes[this.numNodes].size = right.length;
+        var i=0;
+        var index = 0;
+        for(i=0;i<this.nodes[this.nodes[current_node].parent].size;i++){
+            if(this.nodes[this.nodes[current_node].parent].values[i]<middleguy){
+                index++;
+            }
+        }
+        this.nodes[this.nodes[current_node].parent].values.push(middleguy);
+        this.nodes[this.nodes[current_node].parent].values.sort();
+        var temp = this.nodes[this.nodes[current_node].parent].children.split(0,index).concat([this.numNodes]);
+        this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.split(index));
+        if(this.nodes[this.nodes[current_node].parent].values.length <= this.order-1){
+            //We're done
+            this.nodes[this.nodes[current_node].parent].size = this.nodes[this.nodes[current_node].parent].values.length;
+            return;
+        }
+        //Recursively call insertUp for parent node
+        current_node = this.nodes[this.nodes[current_node].parent];
+        median = Math.round(this.nodes[current_node].size/2);
+        left = this.nodes[current_node].values.split(0,median);
+        right = this.nodes[current_node].values.split(median+1);
+        middleguy = this.nodes[current_node].values[median];
+        this.insertUp(left,right,miggleguy,median,current_node);
+    }
+}
+
 //Used when we know a value will fit in the block without over or underflow occurring
 //Likely to be replaced, I think it's part of what's wrong with my inserts
 function bruteInsert(value){
@@ -288,7 +347,7 @@ function bp_insert(value){
 		//Overflow occurs
 		var median = Math.round(this.nodes[current_node].size/2);
 		left = this.nodes[current_node].values.split(0,median);
-		right = this.nodes[current_node].values.split(median+1);
+		right = this.nodes[current_node].values.split(median);
 		
 	}
 }
