@@ -16,7 +16,7 @@ var KE = 8.988 * 10^9;
 // Some constant Q for Coulomb's law.
 var Q_CONST = 1;
 // spring constant for Hooke's Law
-var K_SPRING = 1;
+var K_SPRING = 5;
 // damping factor for our force-based layout algorithm
 var DAMPING = .1;
 var TIMESTEP = .5;
@@ -222,18 +222,22 @@ function layoutGraphNodes() {
             }
             // Now deal with the 'spring' attraction from the connected nodes
             // first the parent (if it exists)
-            if (allNodes[i].parentNode != undefined){
-                netForce += nodeAttraction(allNodes[i], allNodes[i].parentNode);
+            if (allNodes[i].parentNode == undefined){
+                continue;
             }
+            netForce += nodeAttraction(allNodes[i], allNodes[i].parentNode);
             // now the children:
             for (var x = 0; x < allNodes[i].nodeChildren.length; x++) {
                 netForce += nodeAttraction(allNodes[i], allNodes[i].nodeChildren[x]);
             }
 
+            var originalX = allNodes[i].x
             allNodes[i].velocity = (allNodes[i].velocity + TIMESTEP * netForce)
                 * DAMPING;
-            allNodes[i].x = allNodes[i].x + TIMESTEP * allNodes[i].velocity;
-            // some times mass matters here
+            var newX = allNodes[i].x + TIMESTEP * allNodes[i].velocity;
+            allNodes[i].group.move(newX - originalX, 0);
+            console.log(allNodes[i].group.x);
+            console.log(allNodes[i].x);
             kEnergy += allNodes[i].velocity^2;
         }
     }
