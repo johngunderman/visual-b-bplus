@@ -4,19 +4,21 @@ function node(order,parent,leaf){
 	this.children = new Array();
 	this.size = 0;
 	this.numChildren = 0;
-	this.parent = 0;
+	this.parent = parent;
 	this.isLeaf = leaf;
 }
 
 //General structure for b tree
 function b_tree(order){
 	this.order = order;
-	this.root = new node(order,-1,false);
+	this.root = new node(order,-1,true);
 	this.nodes = new Array();
 	this.nodes[0] = this.root;
 	this.numNodes = 1;
-	this.insert = b_insert;
-	this.search = b_search;
+	this.insert_val = b_insert;
+	this.insertUp = insertUp;
+	this.search_val = b_search;
+	this.delete_val = b_delete;
 	this.getChildren = getChildren;
 }
 
@@ -27,8 +29,9 @@ function bp_tree(order){
 	this.nodes = new Array();
 	this.nodes[0] = this.root;
 	this.numNodes = 1;
-	this.insert = bp_insert;
-	this.search = bp_search;
+	this.insert_val = bp_insert;
+	this.search_val = bp_search;
+	this.delete_val = bp_delete;
 	this.getChildren = getChildren;
 }
 
@@ -43,16 +46,20 @@ function b_insert(value){
 	
 	var placement = this.b_search(value,0);
 	var current_node = placement.value;
+	//If there is space in the node...
 	if(this.nodes[current_node].size < (this.order-1)){
 		var i=0;
 		for(i =0;i<this.nodes[current_node].size;i++){
+		    //If insert value is less than value in node...
 			if(this.nodes[current_node].values[i]>value){
+			    //If insert value is less than first value in node, append to front
 				if(i==0){
 					var right = [value];
 					this.nodes[current_node].values = right.concat(this.nodes[current_node].values);
 					this.nodes[current_node].size++;
 					return;
 				}
+				//Else, split left and right, append left, vlaue, right together
 				else{
 					var right = this.nodes[current_node].values.slice(i);
 					var left = this.nodes[current_node].values.slice(0,i);
@@ -63,10 +70,12 @@ function b_insert(value){
 					return;
 				}
 			}
+			//Else, do nothing for now
 			else{
-				this.nodes[current_node].values[this.nodes[current_nodes
+
 			}
 		}
+		//If we reached the end and there was now other value greater than the insert value, add to end of node
 		this.nodes[current_node].values[this.nodes[current_node].size] = value;
 		this.nodes[current_node].size++;
 		return;
@@ -76,6 +85,7 @@ function b_insert(value){
 		var median = Math.round(this.nodes[current_node].size/2);
 		var newValues = new Array();
 		var i=0;
+		//Insert insert value into node temporarily so as to get ordered set
 		for(i=0;i<this.nodes[current_node].size;i++){
 			if(this.nodes[current_node].values[i] > value){
 				if(i==0){
@@ -94,11 +104,38 @@ function b_insert(value){
 				newValues = this.nodes[current_node].values.concat([value]);
 			}
 		}
+		//Split into left, right, and median, 
 		left = newValues.split(0,median);
 		right = newValues.split(median+1);
 		var middleGuy = newValues[median];
 		
 	}
+}
+
+//After overflow in insert for b tree, insert median into parent, and create the appropriate child nodes
+//Create split children, insert above
+function insertUp(left, right, middleguy, median, current_node){
+    var node = this.nodes[current_node];
+    if(node.parent == -1){
+        //Node is root node
+        this.nodes[current_node] = new node(this.order,0,true);
+        this.nodes[current_node].values = left;
+        this.nodes[this.size] = new node(this.order,0,true);
+        this.nodes[this.size].values = right;
+        this.nodes[0].children[0] = current_node;
+        this.nodes[0].children[1] = this.size;
+        this.nodes[0].isLeaf=false;
+        this.nodes[0].values = new Array();
+        this.nodes[0].values[0] = middleguy;
+        //Split up old children
+        var half
+        this.nodes[this.size].children = this.nodes[0].children.split(0,median);
+        this.numNodes += 2;
+        return;
+    }
+    else if(node.parent == 0){
+        //Node's parent is root
+    }
 }
 
 //Used when we know a value will fit in the block without over or underflow occurring
@@ -213,4 +250,53 @@ function bp_search(value, start){
 		current_node = this.nodes[current_node].children[child];
 		this.b_search(value,current_node);
 	}
+}
+
+//Deletion for b tree
+function b_delete(value){
+    var result = this.search_val(value,0);
+    if result.found == false;{
+        return;
+    }
+    
+    if(this.nodes[result.value].isLeaf == true){
+        var i=0;
+        var ref = this.nodes[result.value].values[this.nodes[result.value].values.length - 1];
+        for(i=0;i<this.nodes[result.value].size;i++){
+            if(this.nodes[result.value].values[i] == value){
+                this.nodes[result.value].values[i] == ref + 1;
+                this.nodes[result.value].values.sort();
+                this.nodes[result.value].values.pop();
+                this.nodes[result.value].size--;
+                if(this.nodes[result.value].size<this.order/2){
+                    //We have underflow
+                }
+                //No underflow, we're done
+                return;
+            }
+        }
+    }
+}
+
+//Deletion for b+ tree
+function bp_delete(value){
+    var result = this.search_val(value,0);
+    if result.found == false){
+        //Value did not exist in tree
+        return;
+    }
+    
+    var i=0;
+    var ref = this.nodes[result.value].values[this.nodes[result.value].values.length - 1];
+    for(i=0;i<this.nodes[result.value].size;i++){
+        this.nodes[result.value].values[i] == ref + 1;
+        this.nodes[result.value].values.sort();
+        this.nodes[result.value].values.pop();
+        this.nodes[result.value].size--;
+        if(this.nodes[result.value].size<this.order/2){
+            //We have underflow
+        }
+        //No underflow, we're done
+        return;
+    }
 }
