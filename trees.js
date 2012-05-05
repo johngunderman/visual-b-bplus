@@ -16,7 +16,7 @@ function b_tree(order){
 	this.nodes[0] = this.root;
 	this.numNodes = 1;
 	this.insert_val = b_insert;
-	this.insertUp = insertUp;
+	this.insertUp = b_insertUp;
 	this.search_val = b_search;
 	this.delete_val = b_delete;
 	this.getChildren = getChildren;
@@ -30,6 +30,7 @@ function bp_tree(order){
 	this.nodes[0] = this.root;
 	this.numNodes = 1;
 	this.insert_val = bp_insert;
+	this.insertUp = bp_insertUp;
 	this.search_val = bp_search;
 	this.delete_val = bp_delete;
 	this.getChildren = getChildren;
@@ -96,7 +97,7 @@ function b_insert(value){
 				}
 				else{
 					var left = this.nodes[current_node].values.split(0,i);
-					var right = [value].concat(this.nodes[current_node].values.split(i))l
+					var right = [value].concat(this.nodes[current_node].values.split(i));
 					newValues = left.concat(right);
 				}
 			}
@@ -114,27 +115,121 @@ function b_insert(value){
 
 //After overflow in insert for b tree, insert median into parent, and create the appropriate child nodes
 //Create split children, insert above
-function insertUp(left, right, middleguy, median, current_node){
+function b_insertUp(left, right, middleguy, median, current_node){
     var node = this.nodes[current_node];
     if(node.parent == -1){
         //Node is root node
         this.nodes[current_node] = new node(this.order,0,true);
         this.nodes[current_node].values = left;
-        this.nodes[this.size] = new node(this.order,0,true);
-        this.nodes[this.size].values = right;
+        this.nodes[current_node].size = left.length;
+        this.nodes[this.numNodes] = new node(this.order,0,true);
+        this.nodes[this.numNodes].values = right;
+        this.nodes[this.numNodes].size = right.length;
+        //Split up old children
+        this.nodes[current_node].children = this.nodes[0].children.split(0,median);
+        this.nodes[this.numNodes].children = this.nodes[0].children.split(median);
+        this.nodes[0].children = new Array();
         this.nodes[0].children[0] = current_node;
-        this.nodes[0].children[1] = this.size;
+        this.nodes[0].children[1] = this.numNodes;
         this.nodes[0].isLeaf=false;
         this.nodes[0].values = new Array();
         this.nodes[0].values[0] = middleguy;
-        //Split up old children
-        var half
-        this.nodes[this.size].children = this.nodes[0].children.split(0,median);
+        
         this.numNodes += 2;
         return;
     }
-    else if(node.parent == 0){
+    //else if(node.parent == 0){
         //Node's parent is root
+    //}
+    else{
+        this.nodes[current_node] = new node(this.order,0,true);
+        this.nodes[current_node].values = left;
+        this.nodes[current_node].size = left.length;
+        this.nodes[this.numNodes] = new node(this.order,0,true);
+        this.nodes[this.numNodes].values = right;
+        this.nodes[this.numNodes].size = right.length;
+        var i=0;
+        var index = 0;
+        for(i=0;i<this.nodes[this.nodes[current_node].parent].size;i++){
+            if(this.nodes[this.nodes[current_node].parent].values[i]<middleguy){
+                index++;
+            }
+        }
+        this.nodes[this.nodes[current_node].parent].values.push(middleguy);
+        this.nodes[this.nodes[current_node].parent].values.sort();
+        var temp = this.nodes[this.nodes[current_node].parent].children.split(0,index).concat([this.numNodes]);
+        this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.split(index));
+        if(this.nodes[this.nodes[current_node].parent].values.length <= this.order-1){
+            //We're done
+            this.nodes[this.nodes[current_node].parent].size = this.nodes[this.nodes[current_node].parent].values.length;
+            return;
+        }
+        //Recursively call insertUp for parent node
+        current_node = this.nodes[this.nodes[current_node].parent];
+        median = Math.round(this.nodes[current_node].size/2);
+        left = this.nodes[current_node].values.split(0,median);
+        right = this.nodes[current_node].values.split(median+1);
+        middleguy = this.nodes[current_node].values[median];
+        this.insertUp(left,right,miggleguy,median,current_node);
+    }
+}
+
+function bp_insertUp(left, right, middleguy, median, current_node){
+    var node = this.nodes[current_node];
+    if(node.parent == -1){
+        //Node is root node
+        this.nodes[current_node] = new node(this.order,0,true);
+        this.nodes[current_node].values = left;
+        this.nodes[current_node].size = left.length;
+        this.nodes[this.numNodes] = new node(this.order,0,true);
+        this.nodes[this.numNodes].values = right;
+        this.nodes[this.numNodes].size = right.length;
+        //Split up old children
+        this.nodes[this.current_node].children = this.nodes[0].children.split(0,median);
+        this.nodes[this.numNodes].children = this.nodes[0].children.split(median);
+        this.nodes[0].children = new Array();
+        this.nodes[0].children[0] = current_node;
+        this.nodes[0].children[1] = this.numNodes;
+        this.nodes[0].isLeaf=false;
+        this.nodes[0].values = new Array();
+        this.nodes[0].values[0] = middleguy;
+        
+        this.numNodes += 2;
+        return;
+    }
+    //else if(node.parent == 0){
+        //Node's parent is root
+    //}
+    else{
+        this.nodes[current_node] = new node(this.order,0,true);
+        this.nodes[current_node].values = left;
+        this.nodes[current_node].size = left.length;
+        this.nodes[this.numNodes] = new node(this.order,0,true);
+        this.nodes[this.numNodes].values = right;
+        this.nodes[this.numNodes].size = right.length;
+        var i=0;
+        var index = 0;
+        for(i=0;i<this.nodes[this.nodes[current_node].parent].size;i++){
+            if(this.nodes[this.nodes[current_node].parent].values[i]<middleguy){
+                index++;
+            }
+        }
+        this.nodes[this.nodes[current_node].parent].values.push(middleguy);
+        this.nodes[this.nodes[current_node].parent].values.sort();
+        var temp = this.nodes[this.nodes[current_node].parent].children.split(0,index).concat([this.numNodes]);
+        this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.split(index));
+        if(this.nodes[this.nodes[current_node].parent].values.length <= this.order-1){
+            //We're done
+            this.nodes[this.nodes[current_node].parent].size = this.nodes[this.nodes[current_node].parent].values.length;
+            return;
+        }
+        //Recursively call insertUp for parent node
+        current_node = this.nodes[this.nodes[current_node].parent];
+        median = Math.round(this.nodes[current_node].size/2);
+        left = this.nodes[current_node].values.split(0,median);
+        right = this.nodes[current_node].values.split(median+1);
+        middleguy = this.nodes[current_node].values[median];
+        this.insertUp(left,right,miggleguy,median,current_node);
     }
 }
 
@@ -152,7 +247,7 @@ function bruteInsert(value){
 			}
 			else{
 				var left = this.values.split(0,i);
-				var right = [value].concat(this.values.split(i))l
+				var right = [value].concat(this.values.split(i));
 				return left.concat(right);
 			}
 		}
@@ -255,7 +350,7 @@ function bp_search(value, start){
 //Deletion for b tree
 function b_delete(value){
     var result = this.search_val(value,0);
-    if result.found == false;{
+    if(result.found == false){
         return;
     }
     
@@ -281,7 +376,7 @@ function b_delete(value){
 //Deletion for b+ tree
 function bp_delete(value){
     var result = this.search_val(value,0);
-    if result.found == false){
+    if(result.found == false){
         //Value did not exist in tree
         return;
     }
@@ -300,3 +395,4 @@ function bp_delete(value){
         return;
     }
 }
+
