@@ -1,3 +1,4 @@
+//General structure for a node or block
 function node(order,parent,leaf){
 	this.values = new Array();
 	this.children = new Array();
@@ -7,6 +8,7 @@ function node(order,parent,leaf){
 	this.isLeaf = leaf;
 }
 
+//General structure for b tree
 function b_tree(order){
 	this.order = order;
 	this.root = new node(order,-1,false);
@@ -18,6 +20,7 @@ function b_tree(order){
 	this.getChildren = getChildren;
 }
 
+//General structure for b+ tree
 function bp_tree(order){
 	this.order = order;
 	this.root = new node(order,-1,true);
@@ -29,11 +32,13 @@ function bp_tree(order){
 	this.getChildren = getChildren;
 }
 
+//Helper object, returned by search functions
 function result(value, found){
 	this.value = value;
 	this.found = found;
 }
 
+//Insert function for b trees
 function b_insert(value){
 	
 	var placement = this.b_search(value,0);
@@ -96,6 +101,8 @@ function b_insert(value){
 	}
 }
 
+//Used when we know a value will fit in the block without over or underflow occurring
+//Likely to be replaced, I think it's part of what's wrong with my inserts
 function bruteInsert(value){
 	var i=0;
 	for(i=0;i<this.size;i++){
@@ -116,6 +123,7 @@ function bruteInsert(value){
 	return this.values.concat([value]);
 }
 
+//Insert function for b+ trees
 function bp_insert(value){
 	var placement = this.bp_search(value,0);
 	var current_node = placement.value;
@@ -153,10 +161,12 @@ function bp_insert(value){
 	}
 }
 
+//Helper function, returns array of child nodes
 function getChildren(){
 	return this.nodes;
 }
 
+//Search function designed for b trees
 function b_search(value, start){
 	var current_node = start;
 	var child = 0;
@@ -177,6 +187,7 @@ function b_search(value, start){
 	
 }
 
+//Search function for b+ trees
 function bp_search(value, start){
 	var current_node = start;
 	var child = 0;
