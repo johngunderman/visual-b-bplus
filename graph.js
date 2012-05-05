@@ -11,6 +11,16 @@ var ITEM_HEIGHT = 40;
 
 var LEVEL_SPACING = ITEM_WIDTH;
 
+// Coulomb's constant
+var KE = 8.988 * 10^9;
+// Some constant Q for Coulomb's law.
+var Q_CONST = 1;
+// spring constant for Hooke's Law
+var K_SPRING = 1;
+// damping factor for our force-based layout algorithm
+var DAMPING = .1;
+var TIMESTEP = .5;
+
 window.onload = function() {
     initializeCanvas();
     // TODO: This isn't the right order!
@@ -127,6 +137,9 @@ function generateNode(degree, rectX, rectY) {
     makeIntoNode(box, degree);
     box.group = group;
 
+    // add this ndoe to the set of all our nodes:
+    allNodes.push(box);
+
     return box;
 }
 
@@ -175,9 +188,71 @@ function makeIntoNode(box, degree, pos) {
         node.dispLevel = this.dispLevel++;
         generateLine(box, node, pos);
         box.nodeChildren.push(node);
-
+        // make sure we keep a back reference to the parent
+        node.parentNode = box;
+        // attempt to balance the tree graphically
+        //layoutGraphNodes();
         return node;
     }
+}
+
+function layoutGraphNodes() {
+    // we only deal with X velocity here, as the nodes shouldn't move on the Y axis.
+    for (var i = 0; i < allNodes.length; i++) {
+        allNodes[i].velocity = 0;
+    }
+
+    kEnergy = 1;
+
+    // loop until we reach our threshold of kinetic energy
+    while (kEnergy >= .5) {
+        var kEnergy = 0;
+
+        for (var i = 0; i < allNodes.length; i++) {
+            // net force on node
+            var netForce = 0;
+
+            // for each other node:
+            for (var j = 0; j < allNodes.length; j++) {
+                // check that they aren't the same node
+                if (i != j) {
+                    // they aren't the same node
+                    netForce += nodeRepulsion(allNodes[i], allNodes[j]);
+                }
+            }
+            // Now deal with the 'spring' attraction from the connected nodes
+            // first the parent (if it exists)
+            if (allNodes[i].parentNode != undefined){
+                netForce += nodeAttraction(allNodes[i], allNodes[i].parentNode);
+            }
+            // now the children:
+            for (var x = 0; x < allNodes[i].nodeChildren.length; x++) {
+                netForce += nodeAttraction(allNodes[i], allNodes[i].nodeChildren[x]);
+            }
+
+            allNodes[i].velocity = (allNodes[i].velocity + TIMESTEP * netForce)
+                * DAMPING;
+            allNodes[i].x = allNodes[i].x + TIMESTEP * allNodes[i].velocity;
+            // some times mass matters here
+            kEnergy += allNodes[i].velocity^2;
+        }
+    }
+}
+
+// Based on Coulomb's Law, but only returns the repulsion in the X coordinate
+function nodeRepulsion(node1, node2) {
+    //var r = Math.sqrt((node1.x - node2.x)^2 + (node1.y - node2.y)^2);
+    var r = Math.abs(node1.x - node2.x);
+    // we take q here to be constant for all nodes
+    var force = KE * Q_CONST^2 / r^2;
+    return force
+}
+
+function nodeAttraction(node1, node2) {
+    //var r = Math.sqrt((node1.x - node2.x)^2 + (node1.y - node2.y)^2);
+    var r = Math.abs(node1.x - node2.x);
+    var force = - K_SPRING * r;
+    return force;
 }
 
 function generateLine(parent, child, pos) {
