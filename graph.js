@@ -12,33 +12,36 @@ var ITEM_HEIGHT = 40;
 var LEVEL_SPACING = ITEM_WIDTH;
 
 // Coulomb's constant
-var KE = 8.988 * 10^9;
+var KE = 8.988 * Math.pow(10,6);
 // Some constant Q for Coulomb's law.
 var Q_CONST = 1;
 // spring constant for Hooke's Law
-var K_SPRING = 5;
+var K_SPRING = 1;
 // damping factor for our force-based layout algorithm
-var DAMPING = .1;
-var TIMESTEP = .5;
+var DAMPING = .5;
+var TIMESTEP = .2;
 
 window.onload = function() {
     initializeCanvas();
     // TODO: This isn't the right order!
     // Currently off by 2 (our current tree is actually order 5)
+    //var box = generateRoot(3);
+    //box.addKey(7);
+    //box.addKey(16);
+    //var box2 = box.makeChild(0);
+    //var box3 = box.makeChild(1);
+    //var box4 = box.makeChild(2);
+    // box2.addKey(1);
+    // box2.addKey(2);
+    // box2.addKey(5);
+    // box2.addKey(6);
+    // box3.addKey(9);
+    // box3.addKey(12);
+    // box4.addKey(18);
+    // box4.addKey(21);
     var box = generateRoot(3);
-    box.addKey(7);
-    box.addKey(16);
-    var box2 = box.makeChild(0);
-    var box3 = box.makeChild(1);
-    var box4 = box.makeChild(2);
-    box2.addKey(1);
-    box2.addKey(2);
-    box2.addKey(5);
-    box2.addKey(6);
-    box3.addKey(9);
-    box3.addKey(12);
-    box4.addKey(18);
-    box4.addKey(21);
+    box.makeChild(0);
+    box.makeChild(1);
 };
 
 // Initialize the canvas element using Kinetic
@@ -180,10 +183,7 @@ function makeIntoNode(box, degree, pos) {
         // the * 2 - 1 needed for the spacing between nodes on the child level.
         // broken right now
         //x = (degree * 2 - 1) / 2;
-        var x = box.x - (ITEM_WIDTH * (degree + 2))
-        + (ITEM_WIDTH * (degree + 1) * box.nodeChildren.length)
-        + (ITEM_WIDTH * box.nodeChildren.length);
-        //TODO:  When we insert a left or right node, shift the nodes to the right or left
+        var x = 1000;
         var node = generateNode(degree, x, y);
         node.dispLevel = this.dispLevel++;
         generateLine(box, node, pos);
@@ -191,7 +191,7 @@ function makeIntoNode(box, degree, pos) {
         // make sure we keep a back reference to the parent
         node.parentNode = box;
         // attempt to balance the tree graphically
-        //layoutGraphNodes();
+        layoutGraphNodes();
         return node;
     }
 }
@@ -202,20 +202,25 @@ function layoutGraphNodes() {
         allNodes[i].velocity = 0;
     }
 
-    kEnergy = 1;
+    kEnergy = 100;
 
     // loop until we reach our threshold of kinetic energy
-    while (kEnergy >= .5) {
+    while (kEnergy >= 1) {
         var kEnergy = 0;
 
         for (var i = 0; i < allNodes.length; i++) {
             // net force on node
             var netForce = 0;
+            console.log("new node!");
 
             // for each other node:
             for (var j = 0; j < allNodes.length; j++) {
                 // check that they aren't the same node
-                if (i != j) {
+                // also check that they're relatively on the same level
+                // this is important because we only care about the X axis
+                if (i != j
+                    && allNodes[i].x >= allNodes[j].x - .5 * ITEM_HEIGHT
+                    && allNodes[i].x <= allNodes[j].x + 1.5 * ITEM_HEIGHT) {
                     // they aren't the same node
                     netForce += nodeRepulsion(allNodes[i], allNodes[j]);
                 }
@@ -236,26 +241,49 @@ function layoutGraphNodes() {
                 * DAMPING;
             var newX = allNodes[i].x + TIMESTEP * allNodes[i].velocity;
             allNodes[i].group.move(newX - originalX, 0);
-            console.log(allNodes[i].group.x);
-            console.log(allNodes[i].x);
-            kEnergy += allNodes[i].velocity^2;
+            kEnergy += Math.pow(allNodes[i].velocity, 2);
+            console.log(kEnergy);
         }
+        stage.draw();
     }
 }
 
 // Based on Coulomb's Law, but only returns the repulsion in the X coordinate
 function nodeRepulsion(node1, node2) {
-    //var r = Math.sqrt((node1.x - node2.x)^2 + (node1.y - node2.y)^2);
-    var r = Math.abs(node1.x - node2.x);
+    // we do this twice because we want to repel from both corners, not just the
+    // upper left corner.
+    var x1a = node1.x + node1.group.x + ITEM_WIDTH * node1.nodeDegree;
+    var x2a= node2.x + node2.group.x + ITEM_WIDTH * node2.nodeDegree;
+
+    var x1b = node1.x + node1.group.x;
+    var x2b= node2.x + node2.group.x;
+
+    var ra = x1a - x2a;
+    var rb = x1b - x2b;
+
+    var r = 0;
+    if (ra > rb) {
+        r = ra;
+    } else {
+        r = rb;
+    }
     // we take q here to be constant for all nodes
-    var force = KE * Q_CONST^2 / r^2;
+    var force = KE * Math.pow(Q_CONST, 2) / Math.pow(r,2);
+    if (r < 0) {
+        force = -force;
+    }
+    console.log("repulsive force: " + force);
     return force
 }
 
 function nodeAttraction(node1, node2) {
-    //var r = Math.sqrt((node1.x - node2.x)^2 + (node1.y - node2.y)^2);
-    var r = Math.abs(node1.x - node2.x);
+    var x1 = node1.x + node1.group.x + ITEM_WIDTH * node1.nodeDegree * .5;
+    var x2 = node2.x + node2.group.x + ITEM_WIDTH * node2.nodeDegree * .5;
+    var r = x1 - x2;
     var force = - K_SPRING * r;
+    console.log("attractive force: " + force);
+    console.log("box: " + node1.group.x);
+    console.log("x: " + node1.x);
     return force;
 }
 
