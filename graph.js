@@ -4,10 +4,12 @@ var layer = {};
 var stage = {};
 var lineLayer = {};
 var rootNode = {};
-var nodeLevels = [];             // contains arrays with the nodes on each level
+var allNodes = [];
 
 var ITEM_WIDTH = 60;
 var ITEM_HEIGHT = 40;
+
+var LEVEL_SPACING = ITEM_WIDTH;
 
 window.onload = function() {
     initializeCanvas();
@@ -55,6 +57,7 @@ function generateRoot(degree) {
     var y = 40;
 
     rootNode = generateNode(degree, x, y);
+    rootNode.dispLevel = 0;
     return rootNode;
 }
 
@@ -124,23 +127,9 @@ function generateNode(degree, rectX, rectY) {
     makeIntoNode(box, degree);
     box.group = group;
 
-    addNodeToResizableRepresentation(box);
-
     return box;
 }
 
-
-// BECAUSE LONG FUNCTION NAMES ARE COOL, RIGHT???
-// (I feel like I'm writing Java. It's terrifying.)
-function addNodeToResizableRepresentation(node) {
-    var len = nodeLevels.length;
-
-    if (len == 0) {
-        // special case, we are the root node
-        nodeLevels.push([node]);
-    }
-
-}
 
 function makeIntoNode(box, degree, pos) {
     box.nodeKeys = [];
@@ -180,9 +169,10 @@ function makeIntoNode(box, degree, pos) {
         //x = (degree * 2 - 1) / 2;
         var x = box.x - (ITEM_WIDTH * (degree + 2))
         + (ITEM_WIDTH * (degree + 1) * box.nodeChildren.length)
-            + (ITEM_WIDTH * box.nodeChildren.length)
+        + (ITEM_WIDTH * box.nodeChildren.length);
         //TODO:  When we insert a left or right node, shift the nodes to the right or left
         var node = generateNode(degree, x, y);
+        node.dispLevel = this.dispLevel++;
         generateLine(box, node, pos);
         box.nodeChildren.push(node);
 

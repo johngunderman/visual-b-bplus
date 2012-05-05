@@ -1,1 +1,22 @@
 \section{Algorithms}
+
+% kenny, put a section here about B+ algorithms
+
+The UI portion of this project requires a sizable amount of
+algorithmic work. The most difficult factor is the development of a
+node layout algorithm that prevents node overlap, while also giving an
+ideal spacing between the nodes in the tree. This is especially
+important as the size of the tree grows.
+
+A popular method for solving this problem is the use of the
+force-based algorithm. This algorithm works well for spreading nodes
+out over 2 or 3 dimensional space. However, it does not take into
+account the movement limitations that are imposed in a B+
+tree. Namely, the nodes in a B+ tree can only move horizontally except
+for in the case of a node split or join. This limitation requires
+non-trivial modifications to the algorithm.
+
+A secondary issue with the use of force-based algorithms is that they
+have a running time of O$(n^3)$. This 
+
+
