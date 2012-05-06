@@ -47,6 +47,36 @@ window.onload = function() {
 
 };
 
+function drawTree(tree) {
+    var toVisit = [];
+
+    var current = tree.root;
+    current.graphNode = generateRoot(tree.order);
+
+    // fill in our values
+    for (value in current.values) {
+        current.graphNode.addKey(value);
+    }
+
+    for (var i = 0; i < current.children.length; i++) {
+        current.children[i].graphNode = current.graphNode.makeChild(i);
+        toVisit.push(current.children[i]);
+    }
+
+    for (node in toVisit) {
+        current = node;
+        // fill in our values
+        for (value in current.values) {
+            current.graphNode.addKey(value);
+        }
+
+        for (var i = 0; i < current.children.length; i++) {
+            current.children[i].graphNode = current.graphNode.makeChild(i);
+            toVisit.push(current.children[i]);
+        }
+    }
+}
+
 // Initialize the canvas element using Kinetic
 // Creates global variables for 'stage' and 'layer'
 function initializeCanvas() {
