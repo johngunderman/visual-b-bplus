@@ -246,8 +246,8 @@ function layoutGraphNodes() {
             kEnergy += Math.pow(allNodes[i].velocity, 2);
             console.log(kEnergy);
         }
-        stage.draw();
     }
+    stage.draw();
 }
 
 // Based on Coulomb's Law, but only returns the repulsion in the X coordinate
