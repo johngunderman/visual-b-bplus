@@ -11,12 +11,14 @@ var ITEM_HEIGHT = 40;
 
 var LEVEL_SPACING = ITEM_WIDTH;
 
+// The threshold for stopping our node layout
+var K_THRESH = 1;
 // Coulomb's constant
 var KE = 8.988 * Math.pow(10,6);
 // Some constant Q for Coulomb's law.
 var Q_CONST = 1;
 // spring constant for Hooke's Law
-var K_SPRING = 1;
+var K_SPRING = 5;
 // damping factor for our force-based layout algorithm
 var DAMPING = .5;
 var TIMESTEP = .2;
@@ -205,7 +207,7 @@ function layoutGraphNodes() {
     kEnergy = 100;
 
     // loop until we reach our threshold of kinetic energy
-    while (kEnergy >= 1) {
+    while (kEnergy >= K_THRESH) {
         var kEnergy = 0;
 
         for (var i = 0; i < allNodes.length; i++) {
@@ -259,7 +261,7 @@ function nodeRepulsion(node1, node2) {
     var x2b= node2.x + node2.group.x;
 
     var ra = x1a - x2a;
-    var rb = x1b - x2b;
+    var rb = x1a - x2a;
 
     var r = 0;
     if (ra > rb) {
@@ -267,8 +269,17 @@ function nodeRepulsion(node1, node2) {
     } else {
         r = rb;
     }
-    // we take q here to be constant for all nodes
-    var force = KE * Math.pow(Q_CONST, 2) / Math.pow(r,2);
+
+    var force = 0;
+
+    console.log("radius of " + r);
+    if (Math.abs(r) < ITEM_WIDTH) {
+        force = KE * Math.pow(Q_CONST, 2) / Math.pow(r,2);
+        console.log("going into ultra-repulsion mode");
+    } else {
+        // we take q here to be constant for all nodes
+        force = KE * Math.pow(Q_CONST, 2) / Math.pow(r,2);
+    }
     if (r < 0) {
         force = -force;
     }
