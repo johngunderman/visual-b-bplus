@@ -49,7 +49,7 @@ function result(value, found){
 //Insert function for b trees
 function b_insert(value){
 	this.vals.push(value);
-	var placement = this.b_search(value,0);
+	var placement = this.search_val(value,0);
 	var current_node = placement.value;
 	//If there is space in the node...
 	if(this.nodes[current_node].size < (this.order-1)){
@@ -322,7 +322,7 @@ function bruteInsert(value){
 //Insert function for b+ trees
 function bp_insert(value){
 	this.vals.push(value);
-	var placement = this.bp_search(value,0);
+	var placement = this.search_val(value,0);
 	var current_node = placement.value;
 	if(this.nodes[current_node].size < (this.order-1)){
 		var i=0;
@@ -380,7 +380,7 @@ function b_search(value, start){
 		return new result(current_node,false);
 	}
 	current_node = this.nodes[current_node].children[child];
-	this.b_search(value,current_node);
+	this.search_val(value,current_node);
 	
 }
 
@@ -408,7 +408,7 @@ function bp_search(value, start){
 			return new result(current_node,false);
 		}
 		current_node = this.nodes[current_node].children[child];
-		this.b_search(value,current_node);
+		this.search_val(value,current_node);
 	}
 }
 
