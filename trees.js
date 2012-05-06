@@ -14,6 +14,7 @@ function b_tree(order){
 	this.root = new node(order,-1,true);
 	this.nodes = new Array();
 	this.nodes[0] = this.root;
+	this.vals = new Array();
 	this.numNodes = 1;
 	this.insert_val = b_insert;  //insert_val, search_val, and delete_val are the only functions used on UI's end
 	this.insertUp = b_insertUp;  //All other functions are helpers and are only accessed internally
@@ -29,6 +30,7 @@ function bp_tree(order){
 	this.root = new node(order,-1,true);
 	this.nodes = new Array();
 	this.nodes[0] = this.root;
+	this.vals = new Array();
 	this.numNodes = 1;
 	this.insert_val = bp_insert;  //insert_val, search_val, and delete_val are the only functions used on UI's end
 	this.insertUp = bp_insertUp;  //All other functions are helpers and are only accessed internally
@@ -45,7 +47,7 @@ function result(value, found){
 
 //Insert function for b trees
 function b_insert(value){
-	
+	this.vals.push(value);
 	var placement = this.b_search(value,0);
 	var current_node = placement.value;
 	//If there is space in the node...
@@ -318,6 +320,7 @@ function bruteInsert(value){
 
 //Insert function for b+ trees
 function bp_insert(value){
+	this.vals.push(value);
 	var placement = this.bp_search(value,0);
 	var current_node = placement.value;
 	if(this.nodes[current_node].size < (this.order-1)){
@@ -411,11 +414,13 @@ function bp_search(value, start){
 //Deletion for b tree
 function b_delete(value){
     var result = this.search_val(value,0);
+    
     if(result.found == false){
     	//Value did not exist in tree
         return;
     }
-    
+    var temp = this.vals.indexOf(value);
+    this.vals.splice(temp, 1);
     if(this.nodes[result.value].isLeaf == true){
         var i=0;
         var ref = this.nodes[result.value].values[this.nodes[result.value].values.length - 1];
@@ -427,6 +432,15 @@ function b_delete(value){
                 this.nodes[result.value].size--;
                 if(this.nodes[result.value].size<Math.round(this.order/2)){
                     //We have underflow
+                	//Screw it, rebuild the tree
+                	this.root = new node(order,-1,true);
+                	this.nodes = new Array();
+                	this.nodes[0] = this.root;
+                	this.numNodes = 1;
+                	var vals_to_insert;
+                	for(vals_to_insert in this.vals){
+                		this.insert_val(val_to_insert);
+                	}
                 }
                 //No underflow, we're done
                 return;
@@ -453,6 +467,9 @@ function bp_delete(value){
         //Value did not exist in tree
         return;
     }
+    
+    var temp = this.vals.indexOf(value);
+    this.vals.splice(temp, 1);
     
     var i=0;
     var ref = this.nodes[result.value].values[this.nodes[result.value].values.length - 1];
@@ -489,6 +506,7 @@ function bp_delete(value){
         	if(no_merge_needed){
         		//We can borrow from sibling
         	}
+        	//We need to merge
         }
         //No underflow, we're done
         return;
