@@ -6,6 +6,7 @@ function node(order,parent,leaf){
 	this.numChildren = 0;
 	this.parent = parent;
 	this.isLeaf = leaf;
+	return this;
 }
 
 //General structure for b tree

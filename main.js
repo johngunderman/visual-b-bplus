@@ -1,4 +1,4 @@
-var tree = b_tree(3);
+var tree = new b_tree(3);
 
 
 window.onload = function() {
