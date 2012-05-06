@@ -95,7 +95,7 @@ function generateNode(degree, rectX, rectY) {
         fill: "#00D2FF",
         stroke: "black",
         strokeWidth: 4,
-        draggable: true
+        draggable: false
     });
 
     group.add(box);
