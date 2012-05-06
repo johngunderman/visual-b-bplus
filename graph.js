@@ -14,11 +14,11 @@ var LEVEL_SPACING = ITEM_WIDTH;
 // The threshold for stopping our node layout
 var K_THRESH = 1;
 // Coulomb's constant
-var KE = 8.988 * Math.pow(10,7.5);
+var KE = 8.988 * Math.pow(10,7);
 // Some constant Q for Coulomb's law.
 var Q_CONST = 1;
 // spring constant for Hooke's Law
-var K_SPRING = 5;
+var K_SPRING = 3;
 // damping factor for our force-based layout algorithm
 var DAMPING = .5;
 var TIMESTEP = .2;
@@ -27,23 +27,24 @@ window.onload = function() {
     initializeCanvas();
     // TODO: This isn't the right order!
     // Currently off by 2 (our current tree is actually order 5)
-    //var box = generateRoot(3);
-    //box.addKey(7);
-    //box.addKey(16);
-    //var box2 = box.makeChild(0);
-    //var box3 = box.makeChild(1);
-    //var box4 = box.makeChild(2);
-    // box2.addKey(1);
-    // box2.addKey(2);
-    // box2.addKey(5);
-    // box2.addKey(6);
-    // box3.addKey(9);
-    // box3.addKey(12);
-    // box4.addKey(18);
-    // box4.addKey(21);
     var box = generateRoot(3);
-    box.makeChild(0);
-    box.makeChild(1);
+    box.addKey(7);
+    box.addKey(16);
+    var box2 = box.makeChild(0);
+    var box3 = box.makeChild(1);
+    var box4 = box.makeChild(2);
+    box2.addKey(1);
+    box2.addKey(2);
+    box2.addKey(5);
+    box2.addKey(6);
+    box3.addKey(9);
+    box3.addKey(12);
+    box4.addKey(18);
+    box4.addKey(21);
+    box2.makeChild(0);
+    box2.makeChild(1);
+    box3.makeChild(0);
+
 };
 
 // Initialize the canvas element using Kinetic
@@ -185,7 +186,7 @@ function makeIntoNode(box, degree, pos) {
         // the * 2 - 1 needed for the spacing between nodes on the child level.
         // broken right now
         //x = (degree * 2 - 1) / 2;
-        var x = degree * ITEM_WIDTH * pos * 5;
+        var x = degree * ITEM_WIDTH * (1 + pos) * 5;
         var node = generateNode(degree, x, y);
         node.dispLevel = this.dispLevel++;
         generateLine(box, node, pos);
