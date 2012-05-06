@@ -3,11 +3,11 @@ var tree = new b_tree(3);
 
 window.onload = function() {
     initializeCanvas();
-
+    drawTree(tree);
 };
 
 function insertData() {
-    var val = $("insert-data").val();
+    var val = $('input[name="insert-data"]')[0].value
     if(isNaN(val)){
         //Error
         return;
@@ -18,7 +18,7 @@ function insertData() {
 }
 
 function deleteData() {
-    var val = $("delete-data").val();
+    var val = $('input[name="delete-data"]')[0].value
     if(isNaN(val)){
         //Error
         return;
