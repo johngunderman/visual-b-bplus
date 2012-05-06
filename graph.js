@@ -14,7 +14,7 @@ var LEVEL_SPACING = ITEM_WIDTH;
 // The threshold for stopping our node layout
 var K_THRESH = 1;
 // Coulomb's constant
-var KE = 8.988 * Math.pow(10,6);
+var KE = 8.988 * Math.pow(10,7.5);
 // Some constant Q for Coulomb's law.
 var Q_CONST = 1;
 // spring constant for Hooke's Law
@@ -185,7 +185,7 @@ function makeIntoNode(box, degree, pos) {
         // the * 2 - 1 needed for the spacing between nodes on the child level.
         // broken right now
         //x = (degree * 2 - 1) / 2;
-        var x = 1000;
+        var x = degree * ITEM_WIDTH * pos * 5;
         var node = generateNode(degree, x, y);
         node.dispLevel = this.dispLevel++;
         generateLine(box, node, pos);
@@ -221,8 +221,8 @@ function layoutGraphNodes() {
                 // also check that they're relatively on the same level
                 // this is important because we only care about the X axis
                 if (i != j
-                    && allNodes[i].x >= allNodes[j].x - .5 * ITEM_HEIGHT
-                    && allNodes[i].x <= allNodes[j].x + 1.5 * ITEM_HEIGHT) {
+                    && allNodes[i].y >= allNodes[j].y - .5 * ITEM_HEIGHT
+                    && allNodes[i].y <= allNodes[j].y + 1.5 * ITEM_HEIGHT) {
                     // they aren't the same node
                     netForce += nodeRepulsion(allNodes[i], allNodes[j]);
                 }
@@ -254,26 +254,16 @@ function layoutGraphNodes() {
 function nodeRepulsion(node1, node2) {
     // we do this twice because we want to repel from both corners, not just the
     // upper left corner.
-    var x1a = node1.x + node1.group.x + ITEM_WIDTH * node1.nodeDegree;
-    var x2a= node2.x + node2.group.x + ITEM_WIDTH * node2.nodeDegree;
+    var x1 = node1.x + node1.group.x + ITEM_WIDTH * node1.nodeDegree / 2;
+    var x2 = node2.x + node2.group.x + ITEM_WIDTH * node2.nodeDegree / 2;
 
-    var x1b = node1.x + node1.group.x;
-    var x2b= node2.x + node2.group.x;
 
-    var ra = x1a - x2a;
-    var rb = x1a - x2a;
-
-    var r = 0;
-    if (ra > rb) {
-        r = ra;
-    } else {
-        r = rb;
-    }
+    var r = x1 - x2;
 
     var force = 0;
 
     console.log("radius of " + r);
-    if (Math.abs(r) < ITEM_WIDTH) {
+    if (Math.abs(r) < ITEM_WIDTH * node1.nodeDegree) {
         force = KE * Math.pow(Q_CONST, 2) / Math.pow(r,2);
         console.log("going into ultra-repulsion mode");
     } else {
