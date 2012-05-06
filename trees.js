@@ -450,7 +450,7 @@ function b_delete(value){
 }
 
 //Deletion for b+ tree
-
+//
 /*
  * Start at root, find leaf L where entry belongs.
  * Remove the entry.
@@ -505,8 +505,26 @@ function bp_delete(value){
         	
         	if(no_merge_needed){
         		//We can borrow from sibling
+        		//Screw it, rebuild the tree for now
+                	this.root = new node(order,-1,true);
+                	this.nodes = new Array();
+                	this.nodes[0] = this.root;
+                	this.numNodes = 1;
+                	var vals_to_insert;
+                	for(vals_to_insert in this.vals){
+                		this.insert_val(val_to_insert);
+                	}
         	}
         	//We need to merge
+        	//Screw it, rebuild the tree for now
+                	this.root = new node(order,-1,true);
+                	this.nodes = new Array();
+                	this.nodes[0] = this.root;
+                	this.numNodes = 1;
+                	var vals_to_insert;
+                	for(vals_to_insert in this.vals){
+                		this.insert_val(val_to_insert);
+                	}
         }
         //No underflow, we're done
         return;
