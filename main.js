@@ -1,5 +1,11 @@
 var tree = b_tree(3);
 
+
+window.onload = function() {
+    initializeCanvas();
+
+};
+
 function insertData() {
     var val = $("insert-data").val();
     if(isNaN(val)){
