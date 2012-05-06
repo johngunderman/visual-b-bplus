@@ -6,8 +6,9 @@ function insertData() {
         //Error
         return;
     }
+    console.log("inserting data...");
     tree.insert_val(val);
-    //Call to redraw tree
+    drawTree(tree);
 }
 
 function deleteData() {
@@ -17,7 +18,7 @@ function deleteData() {
         return;
     }
     tree.delete_val(val);
-    //Call to redraw tree
+    drawTree(tree);
 }
 
 function searchData() {
