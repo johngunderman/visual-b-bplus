@@ -1,7 +1,7 @@
 //General structure for a node or block
 function node(order,parent,leaf){
 	this.values = new Array();
-	this.children = new Array();
+	this.children = new Array(); //Array of indices that represent what nodes in the tree are children to this node
 	this.size = 0;
 	this.numChildren = 0;
 	this.parent = parent;
@@ -14,11 +14,13 @@ function b_tree(order){
 	this.root = new node(order,-1,true);
 	this.nodes = new Array();
 	this.nodes[0] = this.root;
+	this.vals = new Array();
 	this.numNodes = 1;
-	this.insert_val = b_insert;
-	this.insertUp = b_insertUp;
+	this.insert_val = b_insert;  //insert_val, search_val, and delete_val are the only functions used on UI's end
+	this.insertUp = b_insertUp;  //All other functions are helpers and are only accessed internally
 	this.search_val = b_search;
 	this.delete_val = b_delete;
+	this.bp_leaf_split = bp_leaf_split;
 	this.getChildren = getChildren;
 }
 
@@ -28,9 +30,10 @@ function bp_tree(order){
 	this.root = new node(order,-1,true);
 	this.nodes = new Array();
 	this.nodes[0] = this.root;
+	this.vals = new Array();
 	this.numNodes = 1;
-	this.insert_val = bp_insert;
-	this.insertUp = bp_insertUp;
+	this.insert_val = bp_insert;  //insert_val, search_val, and delete_val are the only functions used on UI's end
+	this.insertUp = bp_insertUp;  //All other functions are helpers and are only accessed internally
 	this.search_val = bp_search;
 	this.delete_val = bp_delete;
 	this.getChildren = getChildren;
@@ -44,7 +47,7 @@ function result(value, found){
 
 //Insert function for b trees
 function b_insert(value){
-	
+	this.vals.push(value);
 	var placement = this.b_search(value,0);
 	var current_node = placement.value;
 	//If there is space in the node...
@@ -233,6 +236,7 @@ function bp_insertUp(left, right, middleguy, median, current_node){
     }
 }
 
+//Does the initial leaf level split on overflow, is slightly different than internal node or root split
 function bp_leaf_split(left,right,middleguy,median,current_node){
 	var node = this.nodes[current_node];
     if(node.parent == -1){
@@ -316,6 +320,7 @@ function bruteInsert(value){
 
 //Insert function for b+ trees
 function bp_insert(value){
+	this.vals.push(value);
 	var placement = this.bp_search(value,0);
 	var current_node = placement.value;
 	if(this.nodes[current_node].size < (this.order-1)){
@@ -409,10 +414,13 @@ function bp_search(value, start){
 //Deletion for b tree
 function b_delete(value){
     var result = this.search_val(value,0);
+    
     if(result.found == false){
+    	//Value did not exist in tree
         return;
     }
-    
+    var temp = this.vals.indexOf(value);
+    this.vals.splice(temp, 1);
     if(this.nodes[result.value].isLeaf == true){
         var i=0;
         var ref = this.nodes[result.value].values[this.nodes[result.value].values.length - 1];
@@ -422,8 +430,17 @@ function b_delete(value){
                 this.nodes[result.value].values.sort();
                 this.nodes[result.value].values.pop();
                 this.nodes[result.value].size--;
-                if(this.nodes[result.value].size<this.order/2){
+                if(this.nodes[result.value].size<Math.round(this.order/2)){
                     //We have underflow
+                	//Screw it, rebuild the tree
+                	this.root = new node(order,-1,true);
+                	this.nodes = new Array();
+                	this.nodes[0] = this.root;
+                	this.numNodes = 1;
+                	var vals_to_insert;
+                	for(vals_to_insert in this.vals){
+                		this.insert_val(val_to_insert);
+                	}
                 }
                 //No underflow, we're done
                 return;
@@ -433,12 +450,26 @@ function b_delete(value){
 }
 
 //Deletion for b+ tree
+
+/*
+ * Start at root, find leaf L where entry belongs.
+ * Remove the entry.
+ * 	If L is at least half-full, done!
+ * 	If L has fewer entries than it should,
+ * 		Try to re-distribute, borrowing from sibling (adjacent node with same parent as L).
+ * 		If re-distribution fails, merge L and sibling.
+ * If merge occurred, must delete entry (pointing to L or sibling) from parent of L.
+ * Merge could propagate to root, decreasing height.
+ */
 function bp_delete(value){
     var result = this.search_val(value,0);
     if(result.found == false){
         //Value did not exist in tree
         return;
     }
+    
+    var temp = this.vals.indexOf(value);
+    this.vals.splice(temp, 1);
     
     var i=0;
     var ref = this.nodes[result.value].values[this.nodes[result.value].values.length - 1];
@@ -447,8 +478,35 @@ function bp_delete(value){
         this.nodes[result.value].values.sort();
         this.nodes[result.value].values.pop();
         this.nodes[result.value].size--;
-        if(this.nodes[result.value].size<this.order/2){
+        if(this.nodes[result.value].size<Math.round(this.order/2)){
             //We have underflow
+        	//Look at siblings
+        	var siblings = new Array();
+        	var parent = this.nodes[this.nodes[result.value].parent];
+        	var index = parent.children.indexOf(result.value); //Find where our node is in the children list of the paretn node
+        	if(index == 0){
+        		siblings[0] = parent.children[1]; //Right sibling only
+        	}
+        	else if(index == parent.children.length - 1){
+        		siblings[0] = parent.children[index -1]; //Left sibling only
+        	}
+        	else{
+        		siblings[0] = parent.children[index-1]; //Left sibling
+        		siblings[1] = parent.children[index+1]; //Right sibling
+        	}
+        	
+        	var no_merge_needed = false;
+        	var i;
+        	for(i in siblings){
+        		if(this.nodes[i].values.length > Math.round(this.order/2)){
+        			no_merge_needed = true;
+        		}
+        	}
+        	
+        	if(no_merge_needed){
+        		//We can borrow from sibling
+        	}
+        	//We need to merge
         }
         //No underflow, we're done
         return;
