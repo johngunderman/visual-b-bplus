@@ -84,7 +84,7 @@ function generateNode(degree, rectX, rectY) {
     var w = (degree + 1) * ITEM_WIDTH;
 
     var group = new Kinetic.Group({
-        draggable: true
+        draggable: false
     });
 
     var box = new Kinetic.Rect({
@@ -126,16 +126,16 @@ function generateNode(degree, rectX, rectY) {
     group.cnode = box;
 
     // add cursor styling
-    group.on("mouseover", function() {
-        document.body.style.cursor = "pointer";
-    });
-    group.on("mouseout", function() {
-        document.body.style.cursor = "default";
-    });
+    // group.on("mouseover", function() {
+    //     document.body.style.cursor = "pointer";
+    // });
+    // group.on("mouseout", function() {
+    //     document.body.style.cursor = "default";
+    // });
 
-    group.on("dragmove", function() {
-            lineLayer.draw();
-        });
+    // group.on("dragmove", function() {
+    //         lineLayer.draw();
+    //     });
 
     layer.add(group);
     stage.add(layer);
@@ -182,7 +182,7 @@ function makeIntoNode(box, degree, pos) {
     // How we add levels to our tree
     box.makeChild = function(pos) {
         var degree = box.nodeDegree;
-        var y = ITEM_HEIGHT * 4 + box.y;
+        var y = ITEM_HEIGHT * 3 + box.y;
         // the * 2 - 1 needed for the spacing between nodes on the child level.
         // broken right now
         //x = (degree * 2 - 1) / 2;
