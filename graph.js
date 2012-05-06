@@ -23,12 +23,6 @@ var K_SPRING = 3;
 var DAMPING = .5;
 var TIMESTEP = .2;
 
-window.onload = function() {
-    initializeCanvas();
-    tree = b_tree(3);
-
-};
-
 function drawTree(tree) {
     stage.clear();
     var toVisit = [];
@@ -37,8 +31,8 @@ function drawTree(tree) {
     current.graphNode = generateRoot(tree.order);
 
     // fill in our values
-    for (value in current.values) {
-        current.graphNode.addKey(value);
+    for (var value in current.values) {
+        current.graphNode.addKey(current.values[value]);
     }
 
     for (var i = 0; i < current.children.length; i++) {
@@ -46,11 +40,11 @@ function drawTree(tree) {
         toVisit.push(current.children[i]);
     }
 
-    for (node in toVisit) {
-        current = node;
+    for (var node in toVisit) {
+        current = toVisit[node];
         // fill in our values
-        for (value in current.values) {
-            current.graphNode.addKey(value);
+        for (var value in current.values) {
+            current.graphNode.addKey(current.values[value]);
         }
 
         for (var i = 0; i < current.children.length; i++) {
@@ -80,7 +74,7 @@ function initializeCanvas() {
 
 
 function generateRoot(degree) {
-    var w = (degree + 1) * ITEM_WIDTH;
+    var w = (degree - 1) * ITEM_WIDTH;
 
     var x = stage.width / 2 - w / 2;
     var y = 40;
@@ -94,7 +88,7 @@ function generateRoot(degree) {
 // returns a handle to the node.
 function generateNode(degree, rectX, rectY) {
 
-    var w = (degree + 1) * ITEM_WIDTH;
+    var w = (degree - 1) * ITEM_WIDTH;
 
     var group = new Kinetic.Group({
         draggable: false
@@ -113,9 +107,9 @@ function generateNode(degree, rectX, rectY) {
 
     group.add(box);
 
-    var spacing = Math.floor(w / (degree + 1));
+    var spacing = Math.floor(w / (degree - 1));
     // Draw all the vertical lines seperating the degrees of the node
-    for (var i = 1; i < degree + 1; i++) {
+    for (var i = 1; i < degree - 1; i++) {
         // function needed to induce scopeg
         (function() {
             var xcoord = Math.floor(rectX + spacing * i);
