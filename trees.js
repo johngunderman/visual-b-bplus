@@ -21,7 +21,6 @@ function b_tree(order){
 	this.insertUp = b_insertUp;  //All other functions are helpers and are only accessed internally
 	this.search_val = b_search;
 	this.delete_val = b_delete;
-	this.bp_leaf_split = bp_leaf_split;
 	this.getChildren = getChildren;
 }
 
@@ -35,6 +34,7 @@ function bp_tree(order){
 	this.numNodes = 1;
 	this.insert_val = bp_insert;  //insert_val, search_val, and delete_val are the only functions used on UI's end
 	this.insertUp = bp_insertUp;  //All other functions are helpers and are only accessed internally
+	this.bp_leaf_split = bp_leaf_split;
 	this.search_val = bp_search;
 	this.delete_val = bp_delete;
 	this.getChildren = getChildren;
@@ -100,8 +100,8 @@ function b_insert(value){
 					newValues = this.nodes[current_node].values.concat([value]);
 				}
 				else{
-					var left = this.nodes[current_node].values.split(0,i);
-					var right = [value].concat(this.nodes[current_node].values.split(i));
+					var left = this.nodes[current_node].values.slice(0,i);
+					var right = [value].concat(this.nodes[current_node].values.slice(i));
 					newValues = left.concat(right);
 				}
 			}
@@ -110,17 +110,17 @@ function b_insert(value){
 			}
 		}
 		//Split into left, right, and median, 
-		left = newValues.split(0,median);
-		right = newValues.split(median+1);
+		left = newValues.slice(0,median);
+		right = newValues.slice(median+1);
 		var middleGuy = newValues[median];
-		
+		this.insertUp(left,right,middleGuy,median,current_node);
 	}
 }
 
 //After overflow in insert for b tree, insert median into parent, and create the appropriate child nodes
 //Create split children, insert above
 function b_insertUp(left, right, middleguy, median, current_node){
-    var node = this.nodes[current_node];
+    //var node = this.nodes[current_node];
     if(node.parent == -1){
         //Node is root node
         this.nodes[current_node] = new node(this.order,0,true);
@@ -130,8 +130,8 @@ function b_insertUp(left, right, middleguy, median, current_node){
         this.nodes[this.numNodes].values = right;
         this.nodes[this.numNodes].size = right.length;
         //Split up old children
-        this.nodes[current_node].children = this.nodes[0].children.split(0,median);
-        this.nodes[this.numNodes].children = this.nodes[0].children.split(median);
+        this.nodes[current_node].children = this.nodes[0].children.slice(0,median);
+        this.nodes[this.numNodes].children = this.nodes[0].children.slice(median);
         this.nodes[0].children = new Array();
         this.nodes[0].children[0] = current_node;
         this.nodes[0].children[1] = this.numNodes;
@@ -161,8 +161,8 @@ function b_insertUp(left, right, middleguy, median, current_node){
         }
         this.nodes[this.nodes[current_node].parent].values.push(middleguy);
         this.nodes[this.nodes[current_node].parent].values.sort();
-        var temp = this.nodes[this.nodes[current_node].parent].children.split(0,index).concat([this.numNodes]);
-        this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.split(index));
+        var temp = this.nodes[this.nodes[current_node].parent].children.slice(0,index).concat([this.numNodes]);
+        this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.slice(index));
         if(this.nodes[this.nodes[current_node].parent].values.length <= this.order-1){
             //We're done
             this.nodes[this.nodes[current_node].parent].size = this.nodes[this.nodes[current_node].parent].values.length;
@@ -171,8 +171,8 @@ function b_insertUp(left, right, middleguy, median, current_node){
         //Recursively call insertUp for parent node
         current_node = this.nodes[this.nodes[current_node].parent];
         median = Math.round(this.nodes[current_node].size/2);
-        left = this.nodes[current_node].values.split(0,median);
-        right = this.nodes[current_node].values.split(median+1);
+        left = this.nodes[current_node].values.slice(0,median);
+        right = this.nodes[current_node].values.slice(median+1);
         middleguy = this.nodes[current_node].values[median];
         this.insertUp(left,right,miggleguy,median,current_node);
     }
@@ -189,8 +189,8 @@ function bp_insertUp(left, right, middleguy, median, current_node){
         this.nodes[this.numNodes].values = right;
         this.nodes[this.numNodes].size = right.length;
         //Split up old children
-        this.nodes[this.current_node].children = this.nodes[0].children.split(0,median);
-        this.nodes[this.numNodes].children = this.nodes[0].children.split(median);
+        this.nodes[this.current_node].children = this.nodes[0].children.slice(0,median);
+        this.nodes[this.numNodes].children = this.nodes[0].children.slice(median);
         this.nodes[0].children = new Array();
         this.nodes[0].children[0] = current_node;
         this.nodes[0].children[1] = this.numNodes;
@@ -220,8 +220,8 @@ function bp_insertUp(left, right, middleguy, median, current_node){
         }
         this.nodes[this.nodes[current_node].parent].values.push(middleguy);
         this.nodes[this.nodes[current_node].parent].values.sort();
-        var temp = this.nodes[this.nodes[current_node].parent].children.split(0,index).concat([this.numNodes]);
-        this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.split(index));
+        var temp = this.nodes[this.nodes[current_node].parent].children.slice(0,index).concat([this.numNodes]);
+        this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.slice(index));
         if(this.nodes[this.nodes[current_node].parent].values.length <= this.order-1){
             //We're done
             this.nodes[this.nodes[current_node].parent].size = this.nodes[this.nodes[current_node].parent].values.length;
@@ -230,8 +230,8 @@ function bp_insertUp(left, right, middleguy, median, current_node){
         //Recursively call insertUp for parent node
         current_node = this.nodes[this.nodes[current_node].parent];
         median = Math.round(this.nodes[current_node].size/2);
-        left = this.nodes[current_node].values.split(0,median);
-        right = this.nodes[current_node].values.split(median+1);
+        left = this.nodes[current_node].values.slice(0,median);
+        right = this.nodes[current_node].values.slice(median+1);
         middleguy = this.nodes[current_node].values[median];
         this.insertUp(left,right,miggleguy,median,current_node);
     }
@@ -249,8 +249,8 @@ function bp_leaf_split(left,right,middleguy,median,current_node){
         this.nodes[this.numNodes].values = right;
         this.nodes[this.numNodes].size = right.length;
         //Split up old children
-        this.nodes[this.current_node].children = this.nodes[0].children.split(0,median);
-        this.nodes[this.numNodes].children = this.nodes[0].children.split(median);
+        this.nodes[this.current_node].children = this.nodes[0].children.slice(0,median);
+        this.nodes[this.numNodes].children = this.nodes[0].children.slice(median);
         this.nodes[0].children = new Array();
         this.nodes[0].children[0] = current_node;
         this.nodes[0].children[1] = this.numNodes;
@@ -280,8 +280,8 @@ function bp_leaf_split(left,right,middleguy,median,current_node){
         }
         this.nodes[this.nodes[current_node].parent].values.push(middleguy);
         this.nodes[this.nodes[current_node].parent].values.sort();
-        var temp = this.nodes[this.nodes[current_node].parent].children.split(0,index).concat([this.numNodes]);
-        this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.split(index));
+        var temp = this.nodes[this.nodes[current_node].parent].children.slice(0,index).concat([this.numNodes]);
+        this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.slice(index));
         if(this.nodes[this.nodes[current_node].parent].values.length <= this.order-1){
             //We're done
             this.nodes[this.nodes[current_node].parent].size = this.nodes[this.nodes[current_node].parent].values.length;
@@ -290,8 +290,8 @@ function bp_leaf_split(left,right,middleguy,median,current_node){
         //Recursively call insertUp for parent node
         current_node = this.nodes[this.nodes[current_node].parent];
         median = Math.round(this.nodes[current_node].size/2);
-        left = this.nodes[current_node].values.split(0,median);
-        right = this.nodes[current_node].values.split(median+1);
+        left = this.nodes[current_node].values.slice(0,median);
+        right = this.nodes[current_node].values.slice(median+1);
         middleguy = this.nodes[current_node].values[median];
         this.insertUp(left,right,miggleguy,median,current_node);
     }
@@ -310,8 +310,8 @@ function bruteInsert(value){
 				return this.values.concat([value]);
 			}
 			else{
-				var left = this.values.split(0,i);
-				var right = [value].concat(this.values.split(i));
+				var left = this.values.slice(0,i);
+				var right = [value].concat(this.values.slice(i));
 				return left.concat(right);
 			}
 		}
@@ -352,9 +352,9 @@ function bp_insert(value){
 	else{
 		//Overflow occurs
 		var median = Math.round(this.nodes[current_node].size/2);
-		left = this.nodes[current_node].values.split(0,median);
-		right = this.nodes[current_node].values.split(median);
-		
+		left = this.nodes[current_node].values.slice(0,median);
+		right = this.nodes[current_node].values.slice(median);
+		this.bp_leaf_split(left,right,0,median,current_node);
 	}
 }
 
