@@ -7,6 +7,10 @@ build:
 	pdflatex $(DOC) > /dev/null
 	pdflatex $(DOC) > /dev/null
 
+debug:
+	pdflatex $(DOC)
+	pdflatex $(DOC)
+
 kde: build
 	kpdf $(DOC).pdf
 
