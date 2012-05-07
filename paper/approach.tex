@@ -5,8 +5,8 @@ Our apporach to creating the backend which would handle the structure
 of the trees and their contents was fairly straight forward.  We had
 access to well defined rules that define B and B+ trees so designing
 the general structure of the trees was simple enough.  However, since
-our intent was for the web interface to ba able to actively switch
-between B and B+ tree representations we had to factor in as much
+our intent was for the web interface to be able to actively switch
+between B and B+ tree representations, we had to factor in as much
 shared resources as we could to assist in the process of switching
 between the two tree types.  Conveniently, B and B+ trees are fairly
 similar, so it did not take much extra effort to make much of the

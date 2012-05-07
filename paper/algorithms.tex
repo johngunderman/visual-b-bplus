@@ -11,11 +11,13 @@ and deletion methods, which turned out to be quite complex to implement appropri
     Setting up the general structure for the objects that would represent our trees and the nodes that make them up 
 was simple enough.  For B trees we created an object with properties to hold a master list of all nodes in the tree, 
 the order of the tree, a direct reference to the tree's root node, a counter forthe number of nodes in the tree, and 
-references to the methods for searching, insertion, and deletion methods, as well as a helper method called insertUp, 
+references to the methods for searching, insertion, and deletion methods, as well as a helper method called \texttt{insertUp}, 
 which is called recursively after a node overflows to handle splitting the node and inserting the appropriate key into 
-the parent node.  For B+ trees, the object we created has almost all the same properties, but it's insertUp method is 
-only for internal node overflow handling, and it also has a reference to a methods called bp\_leaf\_split which handles 
-overflow in a leaf node.  For nodes, we designed them to work with both tree types.  They contain a list of the values/keys 
+the parent node.  For B+ trees, the object we created has almost all the same properties, but its \texttt{insertUp} method is 
+only for internal node overflow handling, and it also has a reference to a method called \texttt{bp\_leaf\_split} which handles 
+overflow in a leaf node.
+
+The node objects we created were designed to be used for both tree structures.  They contain a list of the values/keys 
 in the node, a list of the children to the node, a reference to the node's parent, counters for the number of values/keys 
 and for the number of children, a flag to signify if the node is a leaf node, and a reference to a helper method that returns 
 the list of children to the node. The tree objects maintain a list of all the nodes in the tree because Javascript does not 
