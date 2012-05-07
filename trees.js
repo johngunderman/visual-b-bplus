@@ -21,7 +21,7 @@ function b_tree(order){
 	this.updateNumNodes = updateNumNodes;
 	this.insert_val = b_insert;  //insert_val, search_val, and delete_val are the only functions used on UI's end
 	this.insertUp = b_insertUp;  //All other functions are helpers and are only accessed internally
-	this.search_val = bp_search;
+	this.search_val = b_search;
 	this.delete_val = b_delete;
 }
 
@@ -116,7 +116,8 @@ function b_insert(value){
 				newValues = this.nodes[current_node].values.concat([value]);
 			}
 		}
-		//Split into left, right, and median, 
+		//Split into left, right, and median,
+		newValues.sort(); 
 		left = newValues.slice(0,median);
 		right = newValues.slice(median+1);
 		var middleGuy = newValues[median];
@@ -154,6 +155,13 @@ function b_insertUp(left, right, middleguy, median, current_node){
         this.nodes[0].children = new Array();
         this.nodes[0].children[0] = this.nodes.length - 2;//this.numNodes;
         this.nodes[0].children[1] = this.nodes.length - 1;//this.numNodes+1;
+        var i=0;
+        for(i=0;i<this.nodes[this.nodes[0].children[0]].children.length;i++){
+            this.nodes[this.nodes[0].children[0]].children[i].parent = this.nodes.length - 2;
+        }
+        for(i=0;i<this.nodes[this.nodes[0].children[1]].children.length;i++){
+            this.nodes[this.nodes[0].children[1]].children[i].parent = this.nodes.length - 1;
+        }
         this.nodes[0].numChildren = 2;
         this.nodes[0].isLeaf=false;
         this.nodes[0].values = new Array();
@@ -167,12 +175,14 @@ function b_insertUp(left, right, middleguy, median, current_node){
         //Node's parent is root
     //}
     else{
-        this.nodes[current_node] = new node(this.order,0,true);
-        this.nodes[current_node].values = left;
-        this.nodes[current_node].size = left.length;
-        this.nodes[this.numNodes] = new node(this.order,0,true);
-        this.nodes[this.numNodes].values = right;
-        this.nodes[this.numNodes].size = right.length;
+        var par = this.nodes[current_node].parent;
+        var leaf = this.nodes[current_node].isLeaf;
+        this.nodes[current_node] = new node(this.order,par,leaf);
+        this.nodes[current_node].values = right;
+        this.nodes[current_node].size = right.length;
+        this.nodes[this.numNodes] = new node(this.order,par,leaf);
+        this.nodes[this.numNodes].values = left;
+        this.nodes[this.numNodes].size = left.length;
         var i=0;
         var index = 0;
         for(i=0;i<this.nodes[this.nodes[current_node].parent].size;i++){
@@ -180,6 +190,11 @@ function b_insertUp(left, right, middleguy, median, current_node){
                 index++;
             }
         }
+        var i=0;
+        for(i=0;i<this.nodes[current_node].children.length;i++){
+            this.nodes[current_node].children[i].parfent = current_node;
+        }
+        
         this.nodes[this.nodes[current_node].parent].values.push(middleguy);
         this.nodes[this.nodes[current_node].parent].values.sort();
         var temp = this.nodes[this.nodes[current_node].parent].children.slice(0,index).concat([this.numNodes]);
@@ -191,7 +206,7 @@ function b_insertUp(left, right, middleguy, median, current_node){
         }
         //Recursively call insertUp for parent node
         current_node = this.nodes[this.nodes[current_node].parent];
-        median = Math.round(this.nodes[current_node].size/2);
+        median = Math.round(this.nodes[current_node].values.length/2);
         left = this.nodes[current_node].values.slice(0,median);
         right = this.nodes[current_node].values.slice(median+1);
         middleguy = this.nodes[current_node].values[median];
@@ -286,10 +301,11 @@ function bp_leaf_split(left,right,middleguy,median,current_node){
         //Node's parent is root
     //}
     else{
-        this.nodes[current_node] = new node(this.order,0,true);
+        var par = this.nodes[current_node].parent;
+        this.nodes[current_node] = new node(this.order,par,true);
         this.nodes[current_node].values = left;
         this.nodes[current_node].size = left.length;
-        this.nodes[this.numNodes] = new node(this.order,0,true);
+        this.nodes[this.numNodes] = new node(this.order,par,true);
         this.nodes[this.numNodes].values = right;
         this.nodes[this.numNodes].size = right.length;
         var i=0;
@@ -301,6 +317,7 @@ function bp_leaf_split(left,right,middleguy,median,current_node){
         }
         this.nodes[this.nodes[current_node].parent].values.push(middleguy);
         this.nodes[this.nodes[current_node].parent].values.sort();
+        index = this.nodes[this.nodes[current_node].parent].values.indexOf(middleguy);
         var temp = this.nodes[this.nodes[current_node].parent].children.slice(0,index).concat([this.numNodes]);
         this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.slice(index));
         if(this.nodes[this.nodes[current_node].parent].values.length <= this.order-1){
@@ -389,7 +406,7 @@ function b_search(value, start){
 	var current_node = start;
 	var child = 0;
 	var i=0;
-	for(i=0;i<this.nodes[current_node].size; i++){
+	for(i=0;i<this.nodes[current_node].values.length; i++){
 		if( this.nodes[current_node].values[i] == value){
 			return new result(current_node,true);
 		}
@@ -401,7 +418,7 @@ function b_search(value, start){
 		return new result(current_node,false);
 	}
 	current_node = this.nodes[current_node].children[child];
-	this.search_val(value,current_node);
+	return this.search_val(value,current_node);
 	
 }
 
@@ -445,6 +462,19 @@ function b_delete(value){
     }
     var temp = this.vals.indexOf(value);
     this.vals.splice(temp, 1);
+    
+    var temp_list = this.vals.slice(0);
+    this.root = new node(this.order,-1,true);
+    this.nodes = new Array();
+    this.nodes[0] = this.root;
+    this.numNodes = 1;
+    this.vals = new Array();
+    var vals_to_insert;
+    for(vals_to_insert in temp_list){
+        console.log(vals_to_insert + " " + temp_list[vals_to_insert]);
+    	this.insert_val(temp_list[vals_to_insert]);
+    }
+    /*
     if(this.nodes[result.value].isLeaf == true){
         var i=0;
         var ref = this.nodes[result.value].values[this.nodes[result.value].values.length - 1];
@@ -457,7 +487,7 @@ function b_delete(value){
                 if(this.nodes[result.value].size<Math.round(this.order/2)){
                     //We have underflow
                 	//Screw it, rebuild the tree
-                	this.root = new node(order,-1,true);
+                	this.root = new node(this.order,-1,true);
                 	this.nodes = new Array();
                 	this.nodes[0] = this.root;
                 	this.numNodes = 1;
@@ -471,6 +501,7 @@ function b_delete(value){
             }
         }
     }
+    */
 }
 
 //Deletion for b+ tree
