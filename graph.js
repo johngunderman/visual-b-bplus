@@ -25,6 +25,7 @@ var TIMESTEP = .2;
 
 function drawTree(tree) {
     stage.clear();
+    allNodes = [];
     var toVisit = [];
 
     var current = tree.root;
