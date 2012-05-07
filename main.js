@@ -36,7 +36,8 @@ function searchData() {
         return;
     }
 
-    tree.search_val(val);
+    tree.search_val(val,0);
     drawTree(tree);
+    tree.nodes[tree.last_highlight].highlight = false;
 }
 

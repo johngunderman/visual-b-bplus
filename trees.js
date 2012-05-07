@@ -6,6 +6,7 @@ function node(order,parent,leaf){
 	this.numChildren = 0;
 	this.parent = parent;
 	this.isLeaf = leaf;
+	this.highlight = false;
 	this.getChildren = getChildren;
 	return this;
 }
@@ -23,6 +24,7 @@ function b_tree(order){
 	this.insertUp = b_insertUp;  //All other functions are helpers and are only accessed internally
 	this.search_val = b_search;
 	this.delete_val = b_delete;
+	this.last_highlight = 0;
 }
 
 function updateNumNodes(value){
@@ -408,6 +410,8 @@ function b_search(value, start){
 	var i=0;
 	for(i=0;i<this.nodes[current_node].values.length; i++){
 		if( this.nodes[current_node].values[i] == value){
+		    this.nodes[current_node].highlight = true;
+		    this.last_highlight = current_node;
 			return new result(current_node,true);
 		}
 		else if(this.nodes[current_node].values[i]< value){
