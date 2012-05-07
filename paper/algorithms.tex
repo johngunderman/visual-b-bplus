@@ -20,10 +20,14 @@ overflow in a leaf node.
 The node objects we created were designed to be used for both tree structures.  They contain a list of the values/keys 
 in the node, a list of the children to the node, a reference to the node's parent, counters for the number of values/keys 
 and for the number of children, a flag to signify if the node is a leaf node, and a reference to a helper method that returns 
-the list of children to the node. The tree objects maintain a list of all the nodes in the tree because Javascript does not 
-have easy to use pointers, so a master list had to be maintained so we could reference specific nodes as need be.  
-As such, all references to nodes outside the master list, such as those inside nodes referencing children and its parent, are stored 
-as the index of the node in the master list.  This method has the same memory footprint as a method that would have used pointers, 
+the list of children to the node.
+
+Inside our tree objects, we maintain a list of all the nodes in the
+tree. This is necessary because Javascript does not have pointers as
+seen in languages such as C. In order to implement the tree, we needed
+to simulate pointers. Our solution is to maintain an array to which we
+store all our nodes. The indices of this array serve as the equivalent
+of pointer references for our tree. This method has the same memory footprint as a method that would have used pointers, 
 though it adds a few extra lines of code where we have to constantly reference back to the trees node list and look up the index
  value of whatever node we want to reference.
 
