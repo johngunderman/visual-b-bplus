@@ -17,11 +17,16 @@ function b_tree(order){
 	this.nodes[0] = this.root;
 	this.vals = new Array();
 	this.numNodes = 1;
+	this.updateNumNodes = updateNumNodes;
 	this.insert_val = b_insert;  //insert_val, search_val, and delete_val are the only functions used on UI's end
 	this.insertUp = b_insertUp;  //All other functions are helpers and are only accessed internally
 	this.search_val = b_search;
 	this.delete_val = b_delete;
 	this.getChildren = getChildren;
+}
+
+function updateNumNodes(value){
+    this.numNodes = this.numNodes + value;
 }
 
 //General structure for b+ tree
@@ -121,25 +126,38 @@ function b_insert(value){
 //Create split children, insert above
 function b_insertUp(left, right, middleguy, median, current_node){
     //var node = this.nodes[current_node];
-    if(node.parent == -1){
-        //Node is root node
-        this.nodes[current_node] = new node(this.order,0,true);
-        this.nodes[current_node].values = left;
-        this.nodes[current_node].size = left.length;
+    if(this.nodes[current_node].parent == -1){
+        //Node is root node 
+        /*
         this.nodes[this.numNodes] = new node(this.order,0,true);
-        this.nodes[this.numNodes].values = right;
-        this.nodes[this.numNodes].size = right.length;
+        this.nodes[this.numNodes].values = left;
+        this.nodes[this.numNodes].size = left.length;
+        this.nodes[this.numNodes+1] = new node(this.order,0,true);
+        this.nodes[this.numNodes+1].values = right;
+        this.nodes[this.numNodes+1].size = right.length;
+        */
+        var node1 = new node(this.order,0,true);
+        node1.values = left;
+        node1.size = left.length;
+        node1.children = this.nodes[0].children.slice(0,median);
+        this.nodes.push(node1);
+        var node2 = new node(this.order,0,true);
+        node2.values = right;
+        node2.size = right.length;
+        node2.children = this.nodes[0].children.slice(median);
+        this.nodes.push(node2);
         //Split up old children
-        this.nodes[current_node].children = this.nodes[0].children.slice(0,median);
-        this.nodes[this.numNodes].children = this.nodes[0].children.slice(median);
+        //this.nodes[this.numNodes].children = this.nodes[0].children.slice(0,median);
+        //this.nodes[this.numNodes+1].children = this.nodes[0].children.slice(median);
         this.nodes[0].children = new Array();
-        this.nodes[0].children[0] = current_node;
-        this.nodes[0].children[1] = this.numNodes;
+        this.nodes[0].children[0] = this.nodes.length - 2;//this.numNodes;
+        this.nodes[0].children[1] = this.nodes.length - 1;//this.numNodes+1;
         this.nodes[0].isLeaf=false;
         this.nodes[0].values = new Array();
         this.nodes[0].values[0] = middleguy;
         
-        this.numNodes += 2;
+        //this.numNodes = this.numNodes + 2;
+        this.numNodes = this.nodes.length;
         return;
     }
     //else if(node.parent == 0){

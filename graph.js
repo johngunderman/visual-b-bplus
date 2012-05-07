@@ -36,8 +36,8 @@ function drawTree(tree) {
     }
 
     for (var i = 0; i < current.children.length; i++) {
-        current.children[i].graphNode = current.graphNode.makeChild(i);
-        toVisit.push(current.children[i]);
+        tree.nodes[current.children[i]].graphNode = current.graphNode.makeChild(i);
+        toVisit.push(tree.nodes[current.children[i]]);
     }
 
     for (var node in toVisit) {
@@ -49,7 +49,7 @@ function drawTree(tree) {
 
         for (var i = 0; i < current.children.length; i++) {
             current.children[i].graphNode = current.graphNode.makeChild(i);
-            toVisit.push(current.children[i]);
+            toVisit.push(tree.nodes[current.children[i]]);
         }
     }
 }
