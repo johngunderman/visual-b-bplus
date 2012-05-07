@@ -6,6 +6,7 @@ function node(order,parent,leaf){
 	this.numChildren = 0;
 	this.parent = parent;
 	this.isLeaf = leaf;
+	this.getChildren = getChildren;
 	return this;
 }
 
@@ -22,7 +23,6 @@ function b_tree(order){
 	this.insertUp = b_insertUp;  //All other functions are helpers and are only accessed internally
 	this.search_val = bp_search;
 	this.delete_val = b_delete;
-	this.getChildren = getChildren;
 }
 
 function updateNumNodes(value){
@@ -42,7 +42,7 @@ function bp_tree(order){
 	this.bp_leaf_split = bp_leaf_split;
 	this.search_val = bp_search;
 	this.delete_val = bp_delete;
-	this.getChildren = getChildren;
+	//this.getChildren = getChildren;
 }
 
 //Helper object, returned by search functions
