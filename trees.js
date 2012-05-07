@@ -20,7 +20,7 @@ function b_tree(order){
 	this.updateNumNodes = updateNumNodes;
 	this.insert_val = b_insert;  //insert_val, search_val, and delete_val are the only functions used on UI's end
 	this.insertUp = b_insertUp;  //All other functions are helpers and are only accessed internally
-	this.search_val = b_search;
+	this.search_val = bp_search;
 	this.delete_val = b_delete;
 	this.getChildren = getChildren;
 }
@@ -56,6 +56,7 @@ function b_insert(value){
 	this.vals.push(value);
 	var placement = this.search_val(value,0);
 	var current_node = placement.value;
+	console.log(placement.value);
 	//If there is space in the node...
 	if(this.nodes[current_node].size < (this.order-1)){
 		var i=0;
@@ -92,6 +93,7 @@ function b_insert(value){
 	}
 	else{
 		//Overflow occurs
+		console.log("Overflow");
 		var median = Math.round(this.nodes[current_node].size/2);
 		var newValues = new Array();
 		var i=0;
@@ -152,6 +154,7 @@ function b_insertUp(left, right, middleguy, median, current_node){
         this.nodes[0].children = new Array();
         this.nodes[0].children[0] = this.nodes.length - 2;//this.numNodes;
         this.nodes[0].children[1] = this.nodes.length - 1;//this.numNodes+1;
+        this.nodes[0].numChildren = 2;
         this.nodes[0].isLeaf=false;
         this.nodes[0].values = new Array();
         this.nodes[0].values[0] = middleguy;
@@ -407,6 +410,7 @@ function bp_search(value, start){
 	var current_node = start;
 	var child = 0;
 	if(this.nodes[current_node].isLeaf){
+	    console.log("Reached child at node: " + start);
 		var i=0;
 		for(i=0;i<this.nodes[current_node].size; i++){
 			if( this.nodes[current_node].values[i] == value){
@@ -423,10 +427,11 @@ function bp_search(value, start){
 			}
 		}
 		if(this.nodes[current_node].numChildren<= child){
-			return new result(current_node,false);
+		    console.log("Impossibility happened... " + child);
+		    return new result(current_node,false);
 		}
 		current_node = this.nodes[current_node].children[child];
-		this.search_val(value,current_node);
+		return this.search_val(value,current_node);
 	}
 }
 
