@@ -44,6 +44,7 @@ function bp_tree(order){
 	this.bp_leaf_split = bp_leaf_split;
 	this.search_val = bp_search;
 	this.delete_val = bp_delete;
+	this.last_highlight = 0;
 	//this.getChildren = getChildren;
 }
 
@@ -418,7 +419,8 @@ function b_search(value, start){
 			child++;
 		}
 	}
-	if(this.nodes[current_node].numChildren<= child){
+	if(this.nodes[current_node].children.length<= child){
+	    console.log("peculiarity");
 		return new result(current_node,false);
 	}
 	current_node = this.nodes[current_node].children[child];
