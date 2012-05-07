@@ -24,7 +24,8 @@ var DAMPING = .5;
 var TIMESTEP = .2;
 
 function drawTree(tree) {
-    stage.clear();
+    layer.removeChildren();
+    lineLayer.removeChildren();
     allNodes = [];
     var toVisit = [];
 
