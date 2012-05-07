@@ -54,4 +54,20 @@ rule did not apply for 1-dimensional models. The solution to this
 problem was to modify the code in such a way that the nodes in the
 model would only repel against other nodes on that level of the tree.
 
+The next issue encountered was that of node ordering. In the
+standard force-based algorithm, all edge endpoints for a given node
+have the same $(x,y)$ coordinates, and ordering does not matter. In
+the case of B and B+ Trees, this is not true. Not only does each node
+have multiple edge endpoints, but ordering also is extremely
+important.
+
+The endpoint problem was trivially solved by simply adjusting our
+$(x,y)$ coordinates for the parent node. The issue of ordering proved
+to be a bit more difficult. The solution we designed relies on the
+algorithm used to build the tree. This algorithm inserts nodes one at
+a time in a left to right order. With this in mind, our force-based
+algorihtm inserts all new nodes at the proper level, but to the far
+right of the graph. This causes all of the nodes to shift to the left
+as the model reaches equilibrium. Because the nodes should not cross
+eachother on the x-axis, they should maintain the same ordering throughout.
 %% WIP
