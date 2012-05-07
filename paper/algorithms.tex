@@ -1,8 +1,9 @@
 \section{Algorithms}
 
+\subsection{B and B+ Algorithms}
 % kenny, put a section here about B+ algorithms
 
-
+\subsection{Graph Layout Algorithms}
 The UI portion of this project requires a sizable amount of
 algorithmic work. The most difficult factor is the development of a
 node layout algorithm that prevents node overlap, while also giving an
@@ -14,10 +15,43 @@ force-based algorithm. This algorithm works well for spreading nodes
 out over 2 or 3 dimensional space. However, it does not take into
 account the movement limitations that are imposed in a B+
 tree. Namely, the nodes in a B+ tree can only move horizontally except
-for in the case of a node split or join. This limitation requires
-non-trivial modifications to the algorithm.
+for in the case of a node split or join.
 
 A secondary issue with the use of force-based algorithms is that they
-have a running time of O$(n^3)$. This 
+have a running time of O$(n^3)$. This long running time is not ideal
+for large trees. Our design helps mitigate the issues presented by
+this running time. Namely, the size of the tree that can be visible to
+the user is limited by the available screen real estate. This limits
+the number of nodes down to a reasonable level, and thus keeps our
+running time within reason.
 
+Force based algorithms operate by modelling interaction between the
+graph nodes using equations borrowed from physics. Each node is
+treated as an electrically charged particle, repelling the other nodes
+in the graph according to Coulomb's Law. Each edge on the graph is
+treated as a spring, attracting the two connected nodes according to
+Hooke's Law. The simulation randomizes initial node positions and then
+simulates each timestep in the model until equilibrium is reached. At
+equilibrium, the nodes should be placed in such a way that overlap is
+minimized.
 
+%% what we did
+Adapting this algorithm to work with our constraints proved to be an
+interesting challenge. Of primary concern was the limitation that each
+node should stay on its own level in the tree throughout the
+simulation. This problem turned to be simple to solve. We modified the
+initial force-based algorithm so that nodes could only apply force on
+the X coordinate plane.
+
+After implementing this system, it became clear that there were still
+some serious issues to address. The nodes in the tree were becoming
+far to spread apart. Furthermore, they were also off-center from their
+expected locations. After some experimentation, it was determined that
+the issue sprouted from an assumption the original algorithm made. The
+original algorithm assumed that all nodes would repel each-other, as
+would make sense in a 2-dimensional model. Unfortunately, the same
+rule did not apply for 1-dimensional models. The solution to this
+problem was to modify the code in such a way that the nodes in the
+model would only repel against other nodes on that level of the tree.
+
+%% WIP
