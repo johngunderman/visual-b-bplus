@@ -1,7 +1,7 @@
 \section{Approach}
 
 \subsection{B and B+ Backend}
-Our apporach to creating the backend which would handle the structure
+Our approach to creating the backend which would handle the structure
 of the trees and their contents was fairly straight forward.  We had
 access to well defined rules that define B and B+ trees so designing
 the general structure of the trees was simple enough.  However, since
@@ -10,7 +10,7 @@ between B and B+ tree representations, we had to factor in as much
 shared resources as we could to assist in the process of switching
 between the two tree types.  Conveniently, B and B+ trees are fairly
 similar, so it did not take much extra effort to make much of the
-trees structure shared.  Specficially, both tree types utilize the
+trees structure shared.  Specfically, both tree types utilize the
 same node/block object we have created.  While the nodes have some
 properties unique to either type of tree, which comes at a slight
 memory cost, it makes it easier to switch back and forth.  We also
@@ -21,10 +21,10 @@ element list, change the tree type, and then insert every value into
 the tree, in the same order they had been inserted into the previous
 tree.  It should be noted that this method could result in getting a
 different tree if you switched from B tree to B+ and back again, or
-vice versa.  this is because we do not execute all opperations that
+vice versa.  this is because we do not execute all operations that
 occurred on the previous tree, just insertions of values that were in
 it, so any imperfect organization caused by deletion could be cleaned
-up by switching back and orth between tree structures.  While
+up by switching back and forth between tree structures.  While
 structurally the trees have various commonalities, the methods of
 insertion, deletion, and searching the trees still had to remain
 completely separate due to the subtly differences in the tree
@@ -39,7 +39,7 @@ its functionality. In order to utilize higher order abstractions, we
 utilized a library called \textit{Kinetic.js}. This library allowed us
 to specify groups of shapes which would be considered as a consistent
 whole when moving across the screen. From this we could construct node
-and edge objects which would be consistent throughout the modelling
+and edge objects which would be consistent throughout the modeling
 process.
 
 User input occurs through the use of text boxes and buttons directly
