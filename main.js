@@ -39,5 +39,6 @@ function searchData() {
     tree.search_val(val,0);
     drawTree(tree);
     tree.nodes[tree.last_highlight].highlight = false;
+    console.log(tree.last_highlight);
 }
 

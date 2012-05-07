@@ -31,7 +31,11 @@ function drawTree(tree) {
     var toVisit = [];
 
     var current = tree.root;
-    current.graphNode = generateRoot(tree.order);
+    if (current.highlight) {
+        current.graphNode = generateRoot(tree.order, true);
+    } else {
+        current.graphNode = generateRoot(tree.order);
+    }
 
     // fill in our values
     for (var value in current.values) {
@@ -39,7 +43,12 @@ function drawTree(tree) {
     }
 
     for (var i = 0; i < current.children.length; i++) {
-        tree.nodes[current.children[i]].graphNode = current.graphNode.makeChild(i);
+        if (tree.nodes[current.children[i]].highlight) {
+            tree.nodes[current.children[i]].graphNode = current.graphNode.makeChild(i, true);
+        }
+        else {
+            tree.nodes[current.children[i]].graphNode = current.graphNode.makeChild(i);
+        }
         toVisit.push(tree.nodes[current.children[i]]);
     }
 
@@ -51,7 +60,12 @@ function drawTree(tree) {
         }
 
         for (var i = 0; i < current.children.length; i++) {
-            current.children[i].graphNode = current.graphNode.makeChild(i);
+            if (tree.nodes[current.children[i]].highlight) {
+                tree.nodes[current.children[i]].graphNode = current.graphNode.makeChild(i, true);
+            }
+            else {
+                tree.nodes[current.children[i]].graphNode = current.graphNode.makeChild(i);
+            }
             toVisit.push(tree.nodes[current.children[i]]);
         }
     }
@@ -76,20 +90,20 @@ function initializeCanvas() {
 }
 
 
-function generateRoot(degree) {
+function generateRoot(degree, highlight) {
     var w = (degree - 1) * ITEM_WIDTH;
 
     var x = stage.width / 2 - w / 2;
     var y = 40;
 
-    rootNode = generateNode(degree, x, y);
+    rootNode = generateNode(degree, x, y, highlight);
     rootNode.dispLevel = 0;
     return rootNode;
 }
 
 // Takes in the degree, generates a node of that degree,
 // returns a handle to the node.
-function generateNode(degree, rectX, rectY) {
+function generateNode(degree, rectX, rectY, highlight) {
 
     var w = (degree - 1) * ITEM_WIDTH;
 
@@ -97,13 +111,20 @@ function generateNode(degree, rectX, rectY) {
         draggable: false
     });
 
+    var color = "black";
+
+    if (highlight) {
+        console.log("we're red!");
+        color = "red";
+    }
+
     var box = new Kinetic.Rect({
         x: rectX,
         y: rectY,
         width: w,
         height: ITEM_HEIGHT,
         fill: "#00D2FF",
-        stroke: "black",
+        stroke: color,
         strokeWidth: 4,
         draggable: false
     });
@@ -190,14 +211,14 @@ function makeIntoNode(box, degree, pos) {
     };
 
     // How we add levels to our tree
-    box.makeChild = function(pos) {
+    box.makeChild = function(pos, highlight) {
         var degree = box.nodeDegree;
         var y = ITEM_HEIGHT * 3 + box.y;
         // the * 2 - 1 needed for the spacing between nodes on the child level.
         // broken right now
         //x = (degree * 2 - 1) / 2;
         var x = degree * ITEM_WIDTH * (1 + pos) * 5;
-        var node = generateNode(degree, x, y);
+        var node = generateNode(degree, x, y, highlight);
         node.dispLevel = this.dispLevel++;
         generateLine(box, node, pos);
         box.nodeChildren.push(node);
