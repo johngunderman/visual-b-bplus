@@ -74,12 +74,16 @@ function drawTree(tree) {
 // Initialize the canvas element using Kinetic
 // Creates global variables for 'stage' and 'layer'
 function initializeCanvas() {
-   var w = $("#board").width();
+    var w = $("#board").width();
+    var h = $(window).height();
+    h -= $("h1").height();
+    h -= $("#buttons").height();
+    h -= 100;
 
     stage = new Kinetic.Stage({
         container: "board",
         width: w,
-        height: 700
+        height: h
     });
 
     layer = new Kinetic.Layer();

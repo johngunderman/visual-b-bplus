@@ -1,9 +1,21 @@
 var tree = new b_tree(3);
 
+function resizeCanvas() {
+    $("#board").empty();
+    initializeCanvas();
+    drawTree(tree);
+};
+
 
 window.onload = function() {
     initializeCanvas();
     drawTree(tree);
+
+    var resizeTimer;
+    $(window).resize(function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resizeCanvas, 1000);
+    });
 };
 
 function insertData() {
