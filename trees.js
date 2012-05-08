@@ -120,7 +120,7 @@ function b_insert(value){
 			}
 		}
 		//Split into left, right, and median,
-		newValues.sort(); 
+		newValues.sort(function(a,b){return a-b}); 
 		left = newValues.slice(0,median);
 		right = newValues.slice(median+1);
 		var middleGuy = newValues[median];
@@ -200,7 +200,7 @@ function b_insertUp(left, right, middleguy, median, current_node){
         }
         
         this.nodes[this.nodes[current_node].parent].values.push(middleguy);
-        this.nodes[this.nodes[current_node].parent].values.sort();
+        this.nodes[this.nodes[current_node].parent].values.sort(function(a,b){return a-b});
         //var temp = this.nodes[this.nodes[current_node].parent].children.slice(0,index).concat([this.numNodes]);
         //this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.slice(index));
         this.nodes[this.nodes[current_node].parent].children.splice(index+1,0,this.numNodes);
@@ -286,7 +286,7 @@ function bp_insertUp(left, right, middleguy, median, current_node){
             }
         }
         this.nodes[this.nodes[current_node].parent].values.push(middleguy);
-        this.nodes[this.nodes[current_node].parent].values.sort();
+        this.nodes[this.nodes[current_node].parent].values.sort(function(a,b){return a-b});
         var temp = this.nodes[this.nodes[current_node].parent].children.slice(0,index).concat([this.numNodes]);
         this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.slice(index));
         if(this.nodes[this.nodes[current_node].parent].values.length <= this.order-1){
@@ -357,7 +357,7 @@ function bp_leaf_split(left,right,middleguy,median,current_node){
             }
         }
         this.nodes[this.nodes[current_node].parent].values.push(middleguy);
-        this.nodes[this.nodes[current_node].parent].values.sort();
+        this.nodes[this.nodes[current_node].parent].values.sort(function(a,b){return a-b});
         index = this.nodes[this.nodes[current_node].parent].values.indexOf(middleguy);
         //var temp = this.nodes[this.nodes[current_node].parent].children.slice(0,index).concat([this.numNodes]);
         //this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.slice(index));
@@ -434,7 +434,7 @@ function bp_insert(value){
 	else{
 		//Overflow occurs
 		this.nodes[current_node].values.push(value);
-		this.nodes[current_node].values.sort();
+		this.nodes[current_node].values.sort(function(a,b){return a-b});
 		var median = Math.round(this.nodes[current_node].size/2);
 		left = this.nodes[current_node].values.slice(0,median);
 		right = this.nodes[current_node].values.slice(median);
@@ -586,7 +586,7 @@ function bp_delete(value){
     var ref = this.nodes[result.value].values[this.nodes[result.value].values.length - 1];
     for(i=0;i<this.nodes[result.value].size;i++){
         this.nodes[result.value].values[i] == ref + 1;
-        this.nodes[result.value].values.sort();
+        this.nodes[result.value].values.sort(function(a,b){return a-b});
         this.nodes[result.value].values.pop();
         this.nodes[result.value].size--;
         if(this.nodes[result.value].size<Math.round(this.order/2)){
