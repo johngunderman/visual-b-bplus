@@ -8,7 +8,7 @@ function node(order,parent,leaf){
 	this.isLeaf = leaf;
 	this.highlight = false;
 	this.getChildren = getChildren;
-	return this;
+	//return this;
 }
 
 //General structure for b tree
@@ -181,11 +181,11 @@ function b_insertUp(left, right, middleguy, median, current_node){
         var par = this.nodes[current_node].parent;
         var leaf = this.nodes[current_node].isLeaf;
         this.nodes[current_node] = new node(this.order,par,leaf);
-        this.nodes[current_node].values = right;
-        this.nodes[current_node].size = right.length;
+        this.nodes[current_node].values = left;
+        this.nodes[current_node].size = left.length;
         this.nodes[this.numNodes] = new node(this.order,par,leaf);
-        this.nodes[this.numNodes].values = left;
-        this.nodes[this.numNodes].size = left.length;
+        this.nodes[this.numNodes].values = right;
+        this.nodes[this.numNodes].size = right.length;
         var i=0;
         var index = 0;
         for(i=0;i<this.nodes[this.nodes[current_node].parent].size;i++){
@@ -200,21 +200,28 @@ function b_insertUp(left, right, middleguy, median, current_node){
         
         this.nodes[this.nodes[current_node].parent].values.push(middleguy);
         this.nodes[this.nodes[current_node].parent].values.sort();
-        var temp = this.nodes[this.nodes[current_node].parent].children.slice(0,index).concat([this.numNodes]);
-        this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.slice(index));
+        //var temp = this.nodes[this.nodes[current_node].parent].children.slice(0,index).concat([this.numNodes]);
+        //this.nodes[this.nodes[current_node].parent].children = temp.concat(this.nodes[this.nodes[current_node].parent].children.slice(index));
+        this.nodes[this.nodes[current_node].parent].children.splice(index+1,0,this.numNodes);
         if(this.nodes[this.nodes[current_node].parent].values.length <= this.order-1){
             //We're done
             this.nodes[this.nodes[current_node].parent].size = this.nodes[this.nodes[current_node].parent].values.length;
+            this.numNodes = this.nodes.length;
             return;
         }
+        console.log("Update NumNodes");
+        this.numNodes = this.nodes.length;
         //Recursively call insertUp for parent node
         current_node = this.nodes[this.nodes[current_node].parent];
-        median = Math.round(this.nodes[current_node].values.length/2);
-        left = this.nodes[current_node].values.slice(0,median);
-        right = this.nodes[current_node].values.slice(median+1);
-        middleguy = this.nodes[current_node].values[median];
-        this.insertUp(left,right,miggleguy,median,current_node);
+        
+        median = Math.floor(current_node.values.length/2);
+        left = current_node.values.slice(0,median);
+        right = current_node.values.slice(median+1);
+        middleguy = current_node.values[median];
+        this.insertUp(left,right,middleguy,median,this.nodes.indexOf(current_node));
     }
+    this.numNodes = this.nodes.length;
+    return;
 }
 
 function bp_insertUp(left, right, middleguy, median, current_node){

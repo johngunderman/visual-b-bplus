@@ -114,7 +114,7 @@ function generateNode(degree, rectX, rectY, highlight) {
     var color = "black";
 
     if (highlight) {
-        console.log("we're red!");
+        //console.log("we're red!");
         color = "red";
     }
 
@@ -245,7 +245,7 @@ function layoutGraphNodes() {
         for (var i = 0; i < allNodes.length; i++) {
             // net force on node
             var netForce = 0;
-            console.log("new node!");
+            //console.log("new node!");
 
             // for each other node:
             for (var j = 0; j < allNodes.length; j++) {
@@ -276,7 +276,7 @@ function layoutGraphNodes() {
             var newX = allNodes[i].x + TIMESTEP * allNodes[i].velocity;
             allNodes[i].group.move(newX - originalX, 0);
             kEnergy += Math.pow(allNodes[i].velocity, 2);
-            console.log(kEnergy);
+            //console.log(kEnergy);
         }
     }
     stage.draw();
@@ -294,10 +294,10 @@ function nodeRepulsion(node1, node2) {
 
     var force = 0;
 
-    console.log("radius of " + r);
+    //console.log("radius of " + r);
     if (Math.abs(r) < ITEM_WIDTH * node1.nodeDegree) {
         force = KE * Math.pow(Q_CONST, 2) / Math.pow(r,2);
-        console.log("going into ultra-repulsion mode");
+        //console.log("going into ultra-repulsion mode");
     } else {
         // we take q here to be constant for all nodes
         force = KE * Math.pow(Q_CONST, 2) / Math.pow(r,2);
@@ -305,7 +305,7 @@ function nodeRepulsion(node1, node2) {
     if (r < 0) {
         force = -force;
     }
-    console.log("repulsive force: " + force);
+    //console.log("repulsive force: " + force);
     return force
 }
 
@@ -314,9 +314,9 @@ function nodeAttraction(node1, node2) {
     var x2 = node2.x + node2.group.x + ITEM_WIDTH * node2.nodeDegree * .5;
     var r = x1 - x2;
     var force = - K_SPRING * r;
-    console.log("attractive force: " + force);
-    console.log("box: " + node1.group.x);
-    console.log("x: " + node1.x);
+    //console.log("attractive force: " + force);
+    //console.log("box: " + node1.group.x);
+    //console.log("x: " + node1.x);
     return force;
 }
 
