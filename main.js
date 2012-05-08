@@ -1,4 +1,4 @@
-var tree = new b_tree(3);
+var tree = new bp_tree(3);
 
 function resizeCanvas() {
     $("#board").empty();
