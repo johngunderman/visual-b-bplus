@@ -13,6 +13,10 @@
   <div id="board"></div>
   <br/>
   <div id="buttons">
+    <input type="text" id="order" size="3" maxlength="3"/>
+    <button type="button" onclick="setOrder();">Set Order</button>
+    <img id="insertLoader" class="imgLoader" src="images/loading.gif" />
+
     <select id="treeSelector">
       <option id="btree">B Tree</option>
       <option id="bptree">B+ Tree</option>
