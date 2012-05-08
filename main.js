@@ -8,8 +8,7 @@ function resizeCanvas() {
 
 
 window.onload = function() {
-    initializeCanvas();
-    drawTree(tree);
+    resizeCanvas();
 
     var resizeTimer;
     $(window).resize(function() {
@@ -22,10 +21,12 @@ window.onload = function() {
 
         if (str == "btree") {
             tree = new b_tree(3);
+            resizeCanvas();
         }
 
         if (str == "bptree") {
             tree = new bp_tree(3);
+            resizeCanvas();
         }
     }).change();
 };
