@@ -327,14 +327,8 @@ function nodeRepulsion(node1, node2) {
 
     var force = 0;
 
-    //console.log("radius of " + r);
-    if (Math.abs(r) < ITEM_WIDTH * node1.nodeDegree) {
-        force = KE * Math.pow(Q_CONST, 2) / Math.pow(r,2);
-        //console.log("going into ultra-repulsion mode");
-    } else {
-        // we take q here to be constant for all nodes
-        force = KE * Math.pow(Q_CONST, 2) / Math.pow(r,2);
-    }
+    force = KE * Math.pow(Q_CONST, 2) / Math.pow(r,2);
+
     if (r < 0) {
         force = -force;
     }
