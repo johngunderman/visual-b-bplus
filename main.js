@@ -1,5 +1,5 @@
 var tree = new b_tree(3);
-
+var vals;
 function resizeCanvas() {
     $("#board").empty();
     initializeCanvas();
@@ -20,12 +20,22 @@ window.onload = function() {
         var str = $("#treeSelector option:selected").attr('id');
 
         if (str == "btree") {
+            vals = tree.vals;
             tree = new b_tree(3);
+            var i;
+            for(i in vals){
+                tree.insert_val(vals[i]);
+            }
             resizeCanvas();
         }
 
         if (str == "bptree") {
+            vals = tree.vals;
             tree = new bp_tree(3);
+            var i;
+            for(i in vals){
+                tree.insert_val(vals[i]);
+            }
             resizeCanvas();
         }
     }).change();

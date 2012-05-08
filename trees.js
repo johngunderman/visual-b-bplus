@@ -57,7 +57,7 @@ function result(value, found){
 //Insert function for b trees
 function b_insert(value){
 	this.vals.push(value);
-	var placement = this.search_val(value,0);
+	var placement = this.search_val(value,0,false);
 	var current_node = placement.value;
 	console.log(placement.value);
 	//If there is space in the node...
@@ -404,7 +404,7 @@ function bruteInsert(value){
 //Insert function for b+ trees
 function bp_insert(value){
 	this.vals.push(value);
-	var placement = this.search_val(value,0);
+	var placement = this.search_val(value,0,false);
 	var current_node = placement.value;
 	if(this.nodes[current_node].size < (this.order)){
 		var i=0;
@@ -449,14 +449,16 @@ function getChildren(){
 }
 
 //Search function designed for b trees
-function b_search(value, start){
+function b_search(value, start, s_var){
 	var current_node = start;
 	var child = 0;
 	var i=0;
 	for(i=0;i<this.nodes[current_node].values.length; i++){
 		if( this.nodes[current_node].values[i] == value){
-		    this.nodes[current_node].highlight = true;
-		    this.last_highlight = current_node;
+		    if(s_var){
+		        this.nodes[current_node].highlight = true;
+		        this.last_highlight = current_node;
+		    }
 			return new result(current_node,true);
 		}
 		else if(this.nodes[current_node].values[i]< value){
@@ -468,12 +470,12 @@ function b_search(value, start){
 		return new result(current_node,false);
 	}
 	current_node = this.nodes[current_node].children[child];
-	return this.search_val(value,current_node);
+	return this.search_val(value,current_node,s_var);
 	
 }
 
 //Search function for b+ trees
-function bp_search(value, start){
+function bp_search(value, start,s_var){
 	var current_node = start;
 	var child = 0;
 	if(this.nodes[current_node].isLeaf){
@@ -481,8 +483,10 @@ function bp_search(value, start){
 		var i=0;
 		for(i=0;i<this.nodes[current_node].size; i++){
 			if( this.nodes[current_node].values[i] == value){
-			    this.nodes[current_node].highlight=true;
-			    this.last_hightlight = current_node;
+			    if(s_var){
+			        this.nodes[current_node].highlight=true;
+			        this.last_hightlight = current_node;
+			    }
 				return new result(current_node,true);
 			}
 		}
@@ -500,13 +504,13 @@ function bp_search(value, start){
 		    return new result(current_node,false);
 		}
 		current_node = this.nodes[current_node].children[child];
-		return this.search_val(value,current_node);
+		return this.search_val(value,current_node,s_var);
 	}
 }
 
 //Deletion for b tree
 function b_delete(value){
-    var result = this.search_val(value,0);
+    var result = this.search_val(value,0,false);
     
     if(result.found == false){
     	//Value did not exist in tree
@@ -569,7 +573,7 @@ function b_delete(value){
  * Merge could propagate to root, decreasing height.
  */
 function bp_delete(value){
-    var result = this.search_val(value,0);
+    var result = this.search_val(value,0,false);
     if(result.found == false){
         //Value did not exist in tree
         return;
