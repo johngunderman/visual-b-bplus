@@ -495,7 +495,7 @@ function bp_search(value, start,s_var){
 	else{
 		var i=0;
 		for(i=0;i<this.nodes[current_node].size; i++){
-			if(this.nodes[current_node].values[i]< value){
+			if(this.nodes[current_node].values[i]<= value){
 				child++;
 			}
 		}
