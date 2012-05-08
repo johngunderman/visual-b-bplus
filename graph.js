@@ -37,6 +37,8 @@ function drawTree(tree) {
         current.graphNode = generateRoot(tree.order);
     }
 
+    console.log(tree);
+
     // fill in our values
     for (var value in current.values) {
         current.graphNode.addKey(current.values[value]);
@@ -52,8 +54,10 @@ function drawTree(tree) {
         toVisit.push(tree.nodes[current.children[i]]);
     }
 
-    for (var node in toVisit) {
-        current = toVisit[node];
+    var node = toVisit.shift();
+    while (node) {
+        console.log(toVisit);
+        current = node;
         // fill in our values
         for (var value in current.values) {
             current.graphNode.addKey(current.values[value]);
@@ -68,6 +72,7 @@ function drawTree(tree) {
             }
             toVisit.push(tree.nodes[current.children[i]]);
         }
+        var node = toVisit.shift();
     }
 }
 
