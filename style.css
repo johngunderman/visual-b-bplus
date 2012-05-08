@@ -15,5 +15,8 @@ h1 {
 
 #board {
     border:1px dashed #333;
+}
 
+.imgLoader {
+    visibility: hidden;
 }

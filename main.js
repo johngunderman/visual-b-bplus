@@ -7,7 +7,9 @@ window.onload = function() {
 };
 
 function insertData() {
-    var val = $('input[name="insert-data"]')[0].value
+    $('#insertLoader')[0].style.visibility = "visible";
+
+    var val = $('input[name="insert-data"]')[0].value;
     if(isNaN(val)){
         //Error
         return;
@@ -15,9 +17,12 @@ function insertData() {
     console.log("inserting data...");
     tree.insert_val(val);
     drawTree(tree);
+
+    $('#insertLoader')[0].style.visibility = "hidden";
 }
 
 function deleteData() {
+    $('#deleteLoader')[0].style.visibility = "visible";
     var val = $('input[name="delete-data"]')[0].value
     if(isNaN(val)){
         //Error
@@ -25,9 +30,11 @@ function deleteData() {
     }
     tree.delete_val(val);
     drawTree(tree);
+    $('#deleteLoader')[0].style.visibility = "hidden";
 }
 
 function searchData() {
+    $('#searchLoader')[0].style.visibility = "visible";
     // get the value the user wants to search for
     var val = $('input[name="search-data"]')[0].value
 
@@ -40,5 +47,6 @@ function searchData() {
     drawTree(tree);
     tree.nodes[tree.last_highlight].highlight = false;
     console.log(tree.last_highlight);
+    $('#searchLoader')[0].style.visibility = "hidden";
 }
 
