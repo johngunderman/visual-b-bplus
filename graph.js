@@ -14,7 +14,7 @@ var LEVEL_SPACING = ITEM_WIDTH;
 // The threshold for stopping our node layout
 var K_THRESH = 1;
 // Coulomb's constant
-var KE = 8.988 * Math.pow(10,7);
+var KE = 8.988 * Math.pow(10,6.5);
 // Some constant Q for Coulomb's law.
 var Q_CONST = 1;
 // spring constant for Hooke's Law

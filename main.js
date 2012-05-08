@@ -1,4 +1,4 @@
-var tree = new bp_tree(3);
+var tree = new b_tree(3);
 
 function resizeCanvas() {
     $("#board").empty();
@@ -16,6 +16,18 @@ window.onload = function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(resizeCanvas, 1000);
     });
+
+    $("select").change(function () {
+        var str = $("#treeSelector option:selected").attr('id');
+
+        if (str == "btree") {
+            tree = new b_tree(3);
+        }
+
+        if (str == "bptree") {
+            tree = new bp_tree(3);
+        }
+    }).change();
 };
 
 function insertData() {
