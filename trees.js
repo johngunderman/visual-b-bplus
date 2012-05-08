@@ -196,7 +196,7 @@ function b_insertUp(left, right, middleguy, median, current_node){
         }
         var i=0;
         for(i=0;i<this.nodes[current_node].children.length;i++){
-            this.nodes[current_node].children[i].parfent = current_node;
+            this.nodes[current_node].children[i].parent = current_node;
         }
         
         this.nodes[this.nodes[current_node].parent].values.push(middleguy);
@@ -228,34 +228,54 @@ function b_insertUp(left, right, middleguy, median, current_node){
 function bp_insertUp(left, right, middleguy, median, current_node){
     //var node = this.nodes[current_node];
     if(this.nodes[current_node].parent == -1){
+        console.log("Splitting root as non-leaf node");
         //Node is root node
-        this.nodes[current_node] = new node(this.order,0,false);
-        this.nodes[current_node].values = left;
-        this.nodes[current_node].size = left.length;
-        this.nodes[this.numNodes] = new node(this.order,0,false);
-        this.nodes[this.numNodes].values = right;
-        this.nodes[this.numNodes].size = right.length;
+        var node1 = new node(this.order,0,false);
+        node1.values = left;
+        node1.size = left.length;
+        node1.children = this.nodes[0].children.slice(0,median+1);
+        var i;
+        
+        this.nodes.push(node1);
+        for(i in node1.children){
+            this.nodes[node1.children[i]].parent = this.nodes.length - 1;
+        }
+        var node2 = new node(this.order,0,false);
+        node2.values = right;
+        node2.size = right.length;
+        node2.children = this.nodes[0].children.slice(median+1);
+        this.nodes.push(node2);
+        for(i in node2.children){
+            this.nodes[node2.children[i]].parent = this.nodes.length - 1;
+        }
+        //this.nodes[current_node] = new node(this.order,0,false);
+        //this.nodes[current_node].values = left;
+        //this.nodes[current_node].size = left.length;
+        //this.nodes[this.numNodes] = new node(this.order,0,false);
+        //this.nodes[this.numNodes].values = right;
+        //this.nodes[this.numNodes].size = right.length;
         //Split up old children
-        this.nodes[current_node].children = this.nodes[0].children.slice(0,median);
-        this.nodes[this.numNodes].children = this.nodes[0].children.slice(median);
+        //this.nodes[current_node].children = this.nodes[0].children.slice(0,median);
+        //this.nodes[this.numNodes].children = this.nodes[0].children.slice(median);
         this.nodes[0].children = new Array();
-        this.nodes[0].children[0] = current_node;
-        this.nodes[0].children[1] = this.numNodes;
+        this.nodes[0].children[0] = this.nodes.length - 2;
+        this.nodes[0].children[1] = this.nodes.length - 1;
         this.nodes[0].isLeaf=false;
         this.nodes[0].values = new Array();
         this.nodes[0].values[0] = middleguy;
         
-        this.numNodes += 2;
+        this.numNodes = this.nodes.length;
         return;
     }
     //else if(node.parent == 0){
         //Node's parent is root
     //}
     else{
-        this.nodes[current_node] = new node(this.order,0,true);
+        console.log("Splitting internal node");
+        this.nodes[current_node] = new node(this.order,0,false);
         this.nodes[current_node].values = left;
         this.nodes[current_node].size = left.length;
-        this.nodes[this.numNodes] = new node(this.order,0,true);
+        this.nodes[this.numNodes] = new node(this.order,0,false);
         this.nodes[this.numNodes].values = right;
         this.nodes[this.numNodes].size = right.length;
         var i=0;
@@ -288,6 +308,7 @@ function bp_insertUp(left, right, middleguy, median, current_node){
 function bp_leaf_split(left,right,middleguy,median,current_node){
 	//var node = this.nodes[current_node];
     if(this.nodes[current_node].parent == -1){
+        console.log("Splitting root as leaf");
         //Node is root node
         var node1 = new node(this.order,0,true);
         node1.values = left;
@@ -320,6 +341,7 @@ function bp_leaf_split(left,right,middleguy,median,current_node){
         //Node's parent is root
     //}
     else{
+        console.log("Splitting leaf, not root");
         var par = this.nodes[current_node].parent;
         this.nodes[current_node] = new node(this.order,par,true);
         this.nodes[current_node].values = left;
@@ -343,9 +365,11 @@ function bp_leaf_split(left,right,middleguy,median,current_node){
         if(this.nodes[this.nodes[current_node].parent].values.length <= this.order-1){
             //We're done
             this.nodes[this.nodes[current_node].parent].size = this.nodes[this.nodes[current_node].parent].values.length;
+            this.numNodes = this.nodes.length;
             return;
         }
         //Recursively call insertUp for parent node
+        this.numNodes = this.nodes.length;
         current_node = this.nodes[current_node].parent;
         median = Math.round(this.nodes[current_node].size/2);
         left = this.nodes[current_node].values.slice(0,median);
@@ -563,6 +587,20 @@ function bp_delete(value){
         this.nodes[result.value].size--;
         if(this.nodes[result.value].size<Math.round(this.order/2)){
             //We have underflow
+            //Screw, rebuild tree
+    
+            var temp_list = this.vals.slice(0);
+            this.root = new node(this.order,-1,true);
+            this.nodes = new Array();
+            this.nodes[0] = this.root;
+            this.numNodes = 1;
+            this.vals = new Array();
+            var vals_to_insert;
+            for(vals_to_insert in temp_list){
+                console.log(vals_to_insert + " " + temp_list[vals_to_insert]);
+            	this.insert_val(temp_list[vals_to_insert]);
+            }
+            return;
         	//Look at siblings
         	var siblings = new Array();
         	var parent = this.nodes[this.nodes[result.value].parent];

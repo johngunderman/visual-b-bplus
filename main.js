@@ -27,7 +27,7 @@ function insertData() {
         return;
     }
     console.log("inserting data...");
-    tree.insert_val(val);
+    tree.insert_val(parseInt(val,10));
     drawTree(tree);
 
     $('#insertLoader')[0].style.visibility = "hidden";
@@ -40,7 +40,7 @@ function deleteData() {
         //Error
         return;
     }
-    tree.delete_val(val);
+    tree.delete_val(parseInt(val,10));
     drawTree(tree);
     $('#deleteLoader')[0].style.visibility = "hidden";
 }
@@ -55,7 +55,7 @@ function searchData() {
         return;
     }
 
-    tree.search_val(val,0);
+    tree.search_val(parseInt(val,10),0);
     drawTree(tree);
     tree.nodes[tree.last_highlight].highlight = false;
     console.log(tree.last_highlight);
