@@ -1,10 +1,34 @@
-var tree = new b_tree(3);
+var order = 3;
+var tree = new b_tree(order);
+
 
 function resizeCanvas() {
     $("#board").empty();
     initializeCanvas();
     drawTree(tree);
 };
+
+function setOrder() {
+
+    var a = parseInt($("#order").val());
+    console.log("we be changing the order to " + a);
+
+    if (a > 3 && a < 10) {
+        order = a;
+    }
+
+    var str = $("#treeSelector option:selected").attr('id');
+
+    if (str == "btree") {
+        tree = new b_tree(order);
+        resizeCanvas();
+    }
+
+    if (str == "bptree") {
+        tree = new bp_tree(order);
+        resizeCanvas();
+    }
+}
 
 
 window.onload = function() {
@@ -20,12 +44,12 @@ window.onload = function() {
         var str = $("#treeSelector option:selected").attr('id');
 
         if (str == "btree") {
-            tree = new b_tree(3);
+            tree = new b_tree(order);
             resizeCanvas();
         }
 
         if (str == "bptree") {
-            tree = new bp_tree(3);
+            tree = new bp_tree(order);
             resizeCanvas();
         }
     }).change();
