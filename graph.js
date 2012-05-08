@@ -31,10 +31,14 @@ function drawTree(tree) {
     var toVisit = [];
 
     var current = tree.root;
+
+    var leaf = current.isLeaf
+        && $("#treeSelector option:selected").attr('id') == "bptree";
+
     if (current.highlight) {
-        current.graphNode = generateRoot(tree.order, true);
+        current.graphNode = generateRoot(tree.order, true, leaf);
     } else {
-        current.graphNode = generateRoot(tree.order);
+        current.graphNode = generateRoot(tree.order, false, leaf);
     }
 
     console.log(tree);
@@ -45,11 +49,19 @@ function drawTree(tree) {
     }
 
     for (var i = 0; i < current.children.length; i++) {
+        var isLeaf = false;
+        if (tree.nodes[current.children[i]].isLeaf
+            && $("#treeSelector option:selected").attr('id') == "bptree") {
+            isLeaf = true;
+        }
+
         if (tree.nodes[current.children[i]].highlight) {
-            tree.nodes[current.children[i]].graphNode = current.graphNode.makeChild(i, true);
+            tree.nodes[current.children[i]].graphNode
+                = current.graphNode.makeChild(i, true, isLeaf);
         }
         else {
-            tree.nodes[current.children[i]].graphNode = current.graphNode.makeChild(i);
+            tree.nodes[current.children[i]].graphNode
+                = current.graphNode.makeChild(i, false, isLeaf);
         }
         toVisit.push(tree.nodes[current.children[i]]);
     }
@@ -64,11 +76,19 @@ function drawTree(tree) {
         }
 
         for (var i = 0; i < current.children.length; i++) {
+            var isLeaf = false;
+            if (tree.nodes[current.children[i]].isLeaf
+                && $("#treeSelector option:selected").attr('id') == "bptree") {
+                isLeaf = true;
+            }
+
             if (tree.nodes[current.children[i]].highlight) {
-                tree.nodes[current.children[i]].graphNode = current.graphNode.makeChild(i, true);
+                tree.nodes[current.children[i]].graphNode
+                    = current.graphNode.makeChild(i, true, isLeaf);
             }
             else {
-                tree.nodes[current.children[i]].graphNode = current.graphNode.makeChild(i);
+                tree.nodes[current.children[i]].graphNode
+                    = current.graphNode.makeChild(i, false, isLeaf);
             }
             toVisit.push(tree.nodes[current.children[i]]);
         }
@@ -99,20 +119,24 @@ function initializeCanvas() {
 }
 
 
-function generateRoot(degree, highlight) {
+function generateRoot(degree, highlight, isLeaf) {
     var w = (degree - 1) * ITEM_WIDTH;
 
     var x = stage.width / 2 - w / 2;
     var y = 40;
 
-    rootNode = generateNode(degree, x, y, highlight);
+    rootNode = generateNode(degree, x, y, highlight, isLeaf);
     rootNode.dispLevel = 0;
     return rootNode;
 }
 
 // Takes in the degree, generates a node of that degree,
 // returns a handle to the node.
-function generateNode(degree, rectX, rectY, highlight) {
+function generateNode(degree, rectX, rectY, highlight, isLeaf) {
+
+    if (isLeaf) {
+        degree++;
+    }
 
     var w = (degree - 1) * ITEM_WIDTH;
 
@@ -220,14 +244,14 @@ function makeIntoNode(box, degree, pos) {
     };
 
     // How we add levels to our tree
-    box.makeChild = function(pos, highlight) {
+    box.makeChild = function(pos, highlight, isLeaf) {
         var degree = box.nodeDegree;
         var y = ITEM_HEIGHT * 3 + box.y;
         // the * 2 - 1 needed for the spacing between nodes on the child level.
         // broken right now
         //x = (degree * 2 - 1) / 2;
         var x = degree * ITEM_WIDTH * (1 + pos) * 5;
-        var node = generateNode(degree, x, y, highlight);
+        var node = generateNode(degree, x, y, highlight, isLeaf);
         node.dispLevel = this.dispLevel++;
         generateLine(box, node, pos);
         box.nodeChildren.push(node);
