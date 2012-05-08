@@ -13,7 +13,7 @@ function setOrder() {
     var a = parseInt($("#order").val());
     console.log("we be changing the order to " + a);
 
-    if (a > 3 && a < 10) {
+    if (a >= 3 && a < 10) {
         order = a;
     }
 
@@ -112,10 +112,28 @@ function searchData() {
         return;
     }
 
-    tree.search_val(parseInt(val,10),0);
+    tree.search_val(parseInt(val,10),0,true);
     drawTree(tree);
     tree.nodes[tree.last_highlight].highlight = false;
     console.log(tree.last_highlight);
     $('#searchLoader')[0].style.visibility = "hidden";
+}
+
+function insertRandom(){
+    var i=0;
+    var rand;
+    for(i=0;i<5;i++){
+        if(tree.vals.length > 60){
+            continue;
+        }
+        rand = Math.floor(Math.random()*101);
+        if(tree.vals.indexOf(rand) == -1){
+            tree.insert_val(rand);
+        }
+        else{
+            i--;
+        }
+    }
+    drawTree(tree);
 }
 
