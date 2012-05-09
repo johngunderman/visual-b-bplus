@@ -34,7 +34,33 @@ window.onload = function() {
             resizeCanvas();
         }
     }).change();
+
+    $("#board").mouseover(function() {
+        document.body.style.cursor = "pointer";
+    });
+
+    $("#board").mouseout(function() {
+        document.body.style.cursor = "default";
+    });
+
+    $("#board").mousedown(function(event) {
+        document.canvasMove = [event.pageX, event.pageY];
+        $("#board").mousemove(dragCanvas);
+    });
+
+    $("#board").mouseup(function() {
+        $("#board").unbind('mousemove');
+    });
+
 };
+
+function dragCanvas(event) {
+    var x = event.pageX - document.canvasMove[0];
+    var y = event.pageY - document.canvasMove[1];
+    stage.move(x, y);
+    stage.draw();
+    document.canvasMove = [event.pageX, event.pageY];
+}
 
 
 function resizeCanvas() {
