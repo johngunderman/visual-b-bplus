@@ -2,6 +2,41 @@ var order = 3;
 var tree = new b_tree(order);
 var vals;
 
+window.onload = function() {
+    resizeCanvas();
+
+    var resizeTimer;
+    $(window).resize(function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resizeCanvas, 1000);
+    });
+
+    $("select").change(function () {
+        var str = $("#treeSelector option:selected").attr('id');
+
+        if (str == "btree") {
+            vals = tree.vals;
+            tree = new b_tree(order);
+            var i;
+            for(i in vals){
+                tree.insert_val(vals[i]);
+            }
+            resizeCanvas();
+        }
+
+        if (str == "bptree") {
+            vals = tree.vals;
+            tree = new bp_tree(order);
+            var i;
+            for(i in vals){
+                tree.insert_val(vals[i]);
+            }
+            resizeCanvas();
+        }
+    }).change();
+};
+
+
 function resizeCanvas() {
     $("#board").empty();
     initializeCanvas();
@@ -39,41 +74,6 @@ function setOrder() {
         resizeCanvas();
     }
 }
-
-
-window.onload = function() {
-    resizeCanvas();
-
-    var resizeTimer;
-    $(window).resize(function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(resizeCanvas, 1000);
-    });
-
-    $("select").change(function () {
-        var str = $("#treeSelector option:selected").attr('id');
-
-        if (str == "btree") {
-            vals = tree.vals;
-            tree = new b_tree(order);
-            var i;
-            for(i in vals){
-                tree.insert_val(vals[i]);
-            }
-            resizeCanvas();
-        }
-
-        if (str == "bptree") {
-            vals = tree.vals;
-            tree = new bp_tree(order);
-            var i;
-            for(i in vals){
-                tree.insert_val(vals[i]);
-            }
-            resizeCanvas();
-        }
-    }).change();
-};
 
 function insertData() {
     $('#insertLoader')[0].style.visibility = "visible";
