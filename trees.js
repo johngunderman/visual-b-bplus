@@ -146,11 +146,13 @@ function b_insertUp(left, right, middleguy, median, current_node){
         var node1 = new node(this.order,0,true);
         node1.values = left;
         node1.size = left.length;
+        node1.children = new Array();
         node1.children = this.nodes[0].children.slice(0,median+1);
         this.nodes.push(node1);
         var node2 = new node(this.order,0,true);
         node2.values = right;
         node2.size = right.length;
+        node2.children = new Array();
         node2.children = this.nodes[0].children.slice(median+1);
         this.nodes.push(node2);
         //Split up old children
@@ -188,8 +190,10 @@ function b_insertUp(left, right, middleguy, median, current_node){
         this.nodes[this.numNodes] = new node(this.order,par,leaf);
         this.nodes[this.numNodes].values = right;
         this.nodes[this.numNodes].size = right.length;
-        this.nodes[this.numNodes].children = kids.slice(index);
-        this.nodes[current_node].children = kids.slice(0,index);
+        this.nodes[this.numNodes].children = new Array();
+        this.nodes[this.numNodes].children = kids.slice(median+1);
+        this.nodes[current_node].children = new Array();
+        this.nodes[current_node].children = kids.slice(0,median+1);
         var i=0;
         var index = 0;
         for(i=0;i<this.nodes[this.nodes[current_node].parent].size;i++){
