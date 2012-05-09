@@ -161,10 +161,10 @@ function b_insertUp(left, right, middleguy, median, current_node){
         this.nodes[0].children[1] = this.nodes.length - 1;//this.numNodes+1;
         var i=0;
         for(i=0;i<this.nodes[this.nodes[0].children[0]].children.length;i++){
-            this.nodes[this.nodes[0].children[0]].children[i].parent = this.nodes.length - 2;
+            this.nodes[this.nodes[this.nodes[0].children[0]].children[i]].parent = this.nodes[0].children[0];
         }
         for(i=0;i<this.nodes[this.nodes[0].children[1]].children.length;i++){
-            this.nodes[this.nodes[0].children[1]].children[i].parent = this.nodes.length - 1;
+            this.nodes[this.nodes[this.nodes[0].children[1]].children[i]].parent = this.nodes[0].children[1];
         }
         this.nodes[0].numChildren = 2;
         this.nodes[0].isLeaf=false;
@@ -181,12 +181,15 @@ function b_insertUp(left, right, middleguy, median, current_node){
     else{
         var par = this.nodes[current_node].parent;
         var leaf = this.nodes[current_node].isLeaf;
+        var kids = this.nodes[current_node].children;
         this.nodes[current_node] = new node(this.order,par,leaf);
         this.nodes[current_node].values = left;
         this.nodes[current_node].size = left.length;
         this.nodes[this.numNodes] = new node(this.order,par,leaf);
         this.nodes[this.numNodes].values = right;
         this.nodes[this.numNodes].size = right.length;
+        this.nodes[this.numNodes].children = kids.slice(index);
+        this.nodes[current_node].children = kids.slice(0,index);
         var i=0;
         var index = 0;
         for(i=0;i<this.nodes[this.nodes[current_node].parent].size;i++){
@@ -194,9 +197,13 @@ function b_insertUp(left, right, middleguy, median, current_node){
                 index++;
             }
         }
+        
         var i=0;
         for(i=0;i<this.nodes[current_node].children.length;i++){
-            this.nodes[current_node].children[i].parent = current_node;
+            this.nodes[this.nodes[current_node].children[i]].parent = current_node;
+        }
+        for(i=0;i<this.nodes[this.numNodes].children.length;i++){
+            this.nodes[this.nodes[this.numNodes].children[i]].parent = this.numNodes;
         }
         
         this.nodes[this.nodes[current_node].parent].values.push(middleguy);
