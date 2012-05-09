@@ -21,7 +21,7 @@ var Q_CONST = 1;
 var K_SPRING = 3;
 // damping factor for our force-based layout algorithm
 var DAMPING = .5;
-var TIMESTEP = .2;
+var TIMESTEP = .1;
 
 function drawTree(tree) {
     stage.clear();
@@ -327,7 +327,8 @@ function nodeRepulsion(node1, node2) {
 
     var force = 0;
 
-    force = KE * Math.pow(Q_CONST, 2) / Math.pow(r,2);
+    force = KE * Math.pow(node1.nodeDegree - 2, 1.5)
+        * Math.pow(Q_CONST, 2) / Math.pow(r,2);
 
     if (r < 0) {
         force = -force;
